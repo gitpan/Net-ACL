@@ -1,6 +1,6 @@
 #!/usr/bin/perl
 
-# $Id: File.pm,v 1.9 2003/05/31 16:49:07 unimlo Exp $
+# $Id: File.pm,v 1.10 2003/06/01 19:51:08 unimlo Exp $
 
 package Net::ACL::File;
 
@@ -10,7 +10,7 @@ use vars qw( $VERSION @ISA );
 ## Inheritance and Versioning ##
 
 @ISA     = qw( Net::ACL );
-$VERSION = '0.05';
+$VERSION = '0.06';
 
 ## Module Imports ##
 

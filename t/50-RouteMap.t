@@ -1,13 +1,14 @@
 #!/usr/bin/perl -wT
 
-# $Id: 50-RouteMap.t,v 1.4 2003/05/31 16:44:48 unimlo Exp $
+# $Id: 50-RouteMap.t,v 1.6 2003/06/01 22:41:53 unimlo Exp $
 
 use strict;
 
-use Test::More tests => 77;
+use Test::More tests => 90;
 
 eval <<USES;
-use Net::BGP::NLRI;
+use Net::BGP::NLRI qw( :origin );
+use Net::BGP::Peer;
 use Net::BGP::RIBEntry;
 USES
 
@@ -106,22 +107,37 @@ my @rules = ($aspath_comm, $deny_comm, $loc10to20, $all);
 		
 SKIP: {
 
-skip('Net::BGP::NLRI not installed',54) unless $hasbgp;
-
+skip('Net::BGP::NLRI not installed',67) unless $hasbgp;
+use Net::BGP::NLRI qw( :origin );
+my $peer = new Net::BGP::Peer(
+	ThisID	=> '10.1.1.1',
+	PeerID	=> '!0.2.2.2'
+	);
+ok(ref $peer eq 'Net::BGP::Peer','Peer construction');
 my $nlri1 = new Net::BGP::NLRI(
 	ASPath => 65000,
 	Communities => [ '65001:1' ],
 	LocalPref => 15
 	);
 my $nlri2 = new Net::BGP::NLRI(
-	ASPath => 65001,
-	Communities => [ '65001:50' ],
-	LocalPref => 30
+	ASPath          => 65001,
+	Communities     => [ '65001:50' ],
+	LocalPref       => 30,
+	Aggregator      => [ 64512, '10.0.0.1' ],
+        AtomicAggregate => 1,
+        MED             => 200,
+        NextHop         => '10.0.0.1',
+        Origin          => INCOMPLETE
 	);
 my $nlri2a = new Net::BGP::NLRI(
-	ASPath => "(65001 65002) 65001",
-	Communities => [ qw(65001:50 65001:200 65001:300) ],
-	LocalPref => 30
+	ASPath		=> "(65001 65002) 65001",
+	Communities	=> [ qw(65001:50 65001:200 65001:300) ],
+	LocalPref	=> 30,
+	Aggregator      => [ 64512, '10.0.0.1' ],
+        AtomicAggregate => 1,
+        MED             => 200,
+        NextHop         => '10.0.0.1',
+        Origin          => INCOMPLETE
 	);
 my $nlri3 = new Net::BGP::NLRI(
         ASPath          => "65001 65002",
@@ -188,13 +204,15 @@ foreach my $testpair (@tests)
    {
     my ($match,$query,$querynlri) = @{$test};
     my $rule = $rules[$no++];
-    ok($rule->match($prefix,$nlri) == $match,"Match $tno - $no");
-    my ($rc,$newprefix,$newnlri) = $rule->query($prefix,$nlri);
+    ok($rule->match($prefix,$nlri,$peer) == $match,"Match $tno - $no");
+    my ($rc,$newprefix,$newnlri,$newpeer) = $rule->query($prefix,$nlri,$peer);
     ok($rc == $query,"Query RC $tno - $no");
     ok((! defined $newnlri && ! defined $querynlri)
       || ($newnlri eq $querynlri),"Query Data $tno - $no");
     ok((! defined $querynlri)
       || ($newprefix eq $prefix),"Query Prefix $tno - $no");
+    ok((! defined $querynlri)
+      || ($peer eq $newpeer),"Query Peer $tno - $no");
    };
  };
 }; # Skip-block

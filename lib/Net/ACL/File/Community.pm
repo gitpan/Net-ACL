@@ -1,6 +1,6 @@
 #!/usr/bin/perl
 
-# $Id: Community.pm,v 1.9 2003/05/31 16:58:07 unimlo Exp $
+# $Id: Community.pm,v 1.10 2003/06/01 19:51:08 unimlo Exp $
 
 package Net::ACL::File::CommunityRule;
 
@@ -10,7 +10,7 @@ use vars qw( $VERSION @ISA );
 ## Inheritance ##
 
 @ISA     = qw( Net::ACL::Rule );
-$VERSION = '0.05';
+$VERSION = '0.06';
 
 ## Module Imports ##
 
@@ -38,7 +38,7 @@ use vars qw( $VERSION @ISA );
 ## Inheritance ##
 
 @ISA     = qw( Net::ACL::File::Standard );
-$VERSION = '0.05';
+$VERSION = '0.06';
 
 ## Module Imports ##
 

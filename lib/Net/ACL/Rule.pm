@@ -1,6 +1,6 @@
 #!/usr/bin/perl
 
-# $Id: Rule.pm,v 1.16 2003/05/31 16:58:07 unimlo Exp $
+# $Id: Rule.pm,v 1.17 2003/06/01 19:51:08 unimlo Exp $
 
 package Net::ACL::Rule;
 
@@ -13,7 +13,7 @@ use vars qw(
 ## Inheritance and Versioning ##
 
 @ISA     = qw( Exporter );
-$VERSION = '0.05';
+$VERSION = '0.06';
 
 ## Module Imports ##
 

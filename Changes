@@ -1,6 +1,12 @@
-$Id: Changes,v 1.8 2003/05/31 16:49:07 unimlo Exp $
+$Id: Changes,v 1.9 2003/06/01 19:50:18 unimlo Exp $
 
 Revision history for Perl extension Net::ACL.
+
+0.06  Sun Jun 01
+	- added signature
+	- update prereq
+	- more documentation fixed
+	- added peer/route-source to RouteMapRule
 
 0.05  Sat May 31
 	- updated more documentation

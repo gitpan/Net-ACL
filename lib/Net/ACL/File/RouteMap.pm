@@ -1,6 +1,6 @@
 #!/usr/bin/perl
 
-# $Id: RouteMap.pm,v 1.13 2003/05/31 16:49:07 unimlo Exp $
+# $Id: RouteMap.pm,v 1.15 2003/06/02 09:11:25 unimlo Exp $
 
 package Net::ACL::File::RouteMapRule;
 
@@ -10,7 +10,7 @@ use vars qw( $VERSION @ISA );
 ## Inheritance ##
 
 @ISA     = qw( Net::ACL::RouteMapRule );
-$VERSION = '0.05';
+$VERSION = '0.06';
 
 ## Module Imports ##
 
@@ -108,7 +108,7 @@ use vars qw( $VERSION @ISA );
 ## Inheritance ##
 
 @ISA     = qw( Net::ACL::File::Standard );
-$VERSION = '0.05';
+$VERSION = '0.06';
 
 ## Module Imports ##
 
@@ -159,7 +159,7 @@ sub loadmatch
 
 =head1 NAME
 
-Net::ACL::File::RouteMap - Class to load BGP Route-maps from configuration string.
+Net::ACL::File::RouteMap - BGP Route-Maps loaded from configuration string.
 
 =head1 DESCRIPTION
 

@@ -1,6 +1,6 @@
 #!/usr/bin/perl
 
-# $Id: Prefix.pm,v 1.6 2003/05/31 16:49:07 unimlo Exp $
+# $Id: Prefix.pm,v 1.7 2003/06/01 19:51:08 unimlo Exp $
 
 package Net::ACL::Match::Prefix;
 
@@ -10,7 +10,7 @@ use vars qw( $VERSION @ISA );
 ## Inheritance and Versioning ##
 
 @ISA     = qw( Net::ACL::Match::IP );
-$VERSION = '0.05';
+$VERSION = '0.06';
 
 ## Module Imports ##
 

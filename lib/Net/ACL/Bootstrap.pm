@@ -1,6 +1,6 @@
 #!/usr/bin/perl
 
-# $Id: Bootstrap.pm,v 1.11 2003/05/31 16:49:07 unimlo Exp $
+# $Id: Bootstrap.pm,v 1.12 2003/06/01 19:51:08 unimlo Exp $
 
 package Net::ACL::Bootstrap;
 
@@ -10,7 +10,7 @@ use vars qw( $VERSION @ISA $AUTOLOAD );
 ## Inheritance and Versioning ##
 
 @ISA     = qw( Exporter );
-$VERSION = '0.05';
+$VERSION = '0.06';
 
 ## Module Imports ##
 

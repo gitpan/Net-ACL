@@ -1,6 +1,6 @@
 #!/usr/bin/perl
 
-# $Id: RouteMapRule.pm,v 1.16 2003/05/31 16:49:07 unimlo Exp $
+# $Id: RouteMapRule.pm,v 1.19 2003/06/01 22:41:53 unimlo Exp $
 
 package Net::ACL::RouteMapRule;
 
@@ -10,7 +10,7 @@ use vars qw( $VERSION @ISA @EXPORT @EXPORT_OK %EXPORT_TAGS @ACL_ROUTEMAP_INDEX )
 ## Inheritance and Versioning ##
 
 @ISA     = qw( Net::ACL::Rule );
-$VERSION = '0.05';
+$VERSION = '0.06';
 
 ## Module Imports ##
 
@@ -20,20 +20,25 @@ use Net::BGP::NLRI;
 
 ## Constants For Argument numbering ##
 
-sub ACL_ROUTEMAP_PREFIX    { 0; };
-sub ACL_ROUTEMAP_COMMUNITY { 1; };
-sub ACL_ROUTEMAP_ASPATH    { 2; };
-sub ACL_ROUTEMAP_NEXTHOP   { 3; };
-sub ACL_ROUTEMAP_LOCALPREF { 4; };
-sub ACL_ROUTEMAP_MED       { 5; };
-sub ACL_ROUTEMAP_ORIGIN    { 6; };
+sub ACL_ROUTEMAP_PREFIX     { 0; };
+sub ACL_ROUTEMAP_ROUTESRC   { 1; };
+sub ACL_ROUTEMAP_COMMUNITY  { 2; };
+sub ACL_ROUTEMAP_ASPATH     { 3; };
+sub ACL_ROUTEMAP_NEXTHOP    { 4; };
+sub ACL_ROUTEMAP_LOCALPREF  { 5; };
+sub ACL_ROUTEMAP_MED        { 6; };
+sub ACL_ROUTEMAP_ORIGIN     { 7; };
+sub ACL_ROUTEMAP_ATOMICAGG  { 8; };
+sub ACL_ROUTEMAP_AGGREGATOR { 9; };
 
-my @FIELDNAMES = ( qw( prefix communities as_path next_hop local_pref med origin ) ); 
+my @FIELDNAMES = ( qw(  - - communities as_path next_hop local_pref
+			med origin atomic_aggregate aggregator) ); 
 
 @ACL_ROUTEMAP_INDEX = qw (
-	ACL_ROUTEMAP_PREFIX
+	ACL_ROUTEMAP_PREFIX ACL_ROUTEMAP_ROUTESRC
 	ACL_ROUTEMAP_COMMUNITY ACL_ROUTEMAP_ASPATH ACL_ROUTEMAP_NEXTHOP
 	ACL_ROUTEMAP_LOCALPREF ACL_ROUTEMAP_MED ACL_ROUTEMAP_ORIGIN
+	ACL_ROUTEMAP_ATOMICAGG ACL_ROUTEMAP_AGGREGATOR
 	);
 
 ## Export Tag Definitions ##
@@ -84,7 +89,7 @@ sub autoconstruction
     };
   }
  elsif (($arg =~ /^ip (address|next-hop) ((?:prefix-list )|)(.*)$/)
-     || ($arg =~ /^(prefix|next[ _-]?hop)/i) && ($type eq 'Match'))
+     || ($arg =~ /^(prefix|next[ _-]?hop|routesource)/i) && ($type eq 'Match'))
   {
    my ($index,$ltype);
    if (defined $2)
@@ -97,7 +102,9 @@ sub autoconstruction
     {
      $index = $1;
      $ltype = $index =~ /prefix/i ? 'prefix-list' : 'access-list';
-     $index = $index =~ /prefix/i ? ACL_ROUTEMAP_PREFIX : ACL_ROUTEMAP_NEXTHOP;
+     $index =
+	$index =~ /prefix/i ? ACL_ROUTEMAP_PREFIX :
+	$index =~ /routesource/ ? ACL_ROUTEMAP_ROUTESRC : ACL_ROUTEMAP_NEXTHOP;
      @values = @{$values[0]} if ref $values[0] eq 'ARRAY';
     }
    my @lists;
@@ -150,16 +157,23 @@ sub autoconstruction
 
 sub match
 {
- my ($this,$prefix,$nlri) = @_;
- return $this->SUPER::match($prefix,$this->_nlri2list($nlri));
+ my ($this,$prefix,$nlri,$peer) = @_;
+ my $routesrc = '';
+ $routesrc = $peer->peer_id if (ref $peer) && defined $peer->peer_id;
+ return $this->SUPER::match($prefix,$routesrc,$this->_nlri2list($nlri));
 }
 
 sub query
 {
- my ($this,$prefix,$nlri) = @_;
- my ($rc,$newprefix,@res) = $this->SUPER::query($prefix,$this->_nlri2list($nlri));
+ my ($this,$prefix,$nlri,$peer) = @_;
+ my $routesrc = '';
+ $routesrc = $peer->peer_id if (ref $peer) && defined $peer->peer_id;
+ my ($rc,$newprefix,$newroutesrc,@res) =
+	$this->SUPER::query($prefix,$routesrc,$this->_nlri2list($nlri));
  return ($rc,undef) if $rc eq ACL_DENY;
- return ($rc,$newprefix,$this->_list2nlri(@res));
+ croak 'Routemap is not allowed to change routesource'
+	unless $routesrc eq $newroutesrc;
+ return ($rc,$newprefix,$this->_list2nlri(@res),$peer);
 }
 
 ## Private Object Methods ##
@@ -171,7 +185,7 @@ sub _nlri2list
  my @arg = ();
  foreach my $field (@FIELDNAMES)
   {
-   next if $field eq 'prefix';
+   next if $field eq '-';
    push(@arg, $nlri->$field());
   };
  return @arg;
@@ -181,10 +195,10 @@ sub _list2nlri
 {
  my ($this,@res) = @_;
  my $nlri = new Net::BGP::NLRI();
- foreach my $num (1.. $#FIELDNAMES)
+ foreach my $num (2 .. $#FIELDNAMES)
   {
    my $field = $FIELDNAMES[$num];
-   $nlri->$field($res[$num-1]);
+   $nlri->$field($res[$num-2]);
   };
  return $nlri;
 }
@@ -209,6 +223,7 @@ Net::ACL::RouteMapRule - Class representing a BGP-4 policy route-map rule
 		Community	=> [ 'my-community-list' ],
 		Prefix		=> [ 'my-prefix-list' ],
 		Next_hop	=> [ 'my-access-list' ],
+		Routesource	=> [ 'my-access-list' ],
 		MED		=> 20,
 		Local_Pref	=> 200,
 		Origin		=> IGP
@@ -266,13 +281,18 @@ When used in Set, it should be a list of communities to set.
 =item Prefix
 
 The Prefix named argument can only be used under Match. It's value should be
-a list of Net::ACL prefix-lists.
+a list of Net::ACL prefix-list names.
 
 =item Next_hop
 
 When used under Match, it's value should be a list of names of access-lists.
 
 When used under Set, it's value should be an IP address.
+
+=item Routesource
+
+The Routesource named argument can only be used under Match. It's value should
+be a list of Net::ACL access-list names.
 
 =item Origin
 

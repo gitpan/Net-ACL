@@ -1,6 +1,6 @@
 #!/usr/bin/perl
 
-# $Id: Union.pm,v 1.3 2003/05/31 16:58:07 unimlo Exp $
+# $Id: Union.pm,v 1.4 2003/06/01 19:51:08 unimlo Exp $
 
 package Net::ACL::Set::Union;
 
@@ -10,7 +10,7 @@ use vars qw( $VERSION @ISA );
 ## Inheritance and Versioning ##
 
 @ISA     = qw( Net::ACL::Set::Scalar );
-$VERSION = '0.05';
+$VERSION = '0.06';
 
 ## Module Imports ##
 
