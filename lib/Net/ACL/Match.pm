@@ -1,6 +1,6 @@
 #!/usr/bin/perl
 
-# $Id: Match.pm,v 1.6 2003/05/28 14:38:59 unimlo Exp $
+# $Id: Match.pm,v 1.8 2003/05/29 00:08:44 unimlo Exp $
 
 package Net::ACL::Match;
 
@@ -10,7 +10,7 @@ use vars qw( $VERSION @ISA );
 ## Inheritance and Versioning ##
 
 @ISA     = qw( Exporter );
-$VERSION = '0.03';
+$VERSION = '0.04';
 
 ## Module Imports ##
 
@@ -75,13 +75,17 @@ Net::ACL::Match - Abstract parent class of Match-classes
 
 =head1 DESCRIPTION
 
-This is an abstract parent class for all B<Net::ACL::Match*>
-classes. It is used by the B<Net::ACL::Rule> object.
+This is an abstract parent class for all Net::ACL::Match*
+classes. It is used by the Net::ACL::Rule object.
 
-It only has a constructor B<new> and two methods B<match> and B<index>.
+It only has a constructor new() and two methods match() and index().
 Both new and match should be replaced in any ancestor object.
 
 =head1 CONSTRUCTOR
+
+=over 4
+
+=item new() - create a new Net::ACL::Match::Scalar object
 
     my $match = new Net::ACL::MatchMyPackage($args);
 
@@ -89,26 +93,32 @@ This is the constructor for Net::ACL::Match* objects.
 It returns a reference to the newly created object.
 It takes one argument which should describe what to match.
 
+=back
+
 =head1 ACCESSOR METHODS
 
-I<match()>
+=over 4
+
+=item match()
 
 This function should match the data given as arguments (one or more) with
 the data passed to the constructor and return either ACL_MATCH or
 ACL_NOMATCH as exported by the ":rc" exporter symbol of
-B<Net::ACL::Rule>.
+Net::ACL::Rule.
 
-I<index()>
+=item index()
 
 This function return the argument number that matched any sub-class.
 Called with an argument, the argument is used as the new value.
 
+=back
+
 =head1 SEE ALSO
 
-B<Net::ACL::Rule>, B<Net::ACL>,
-B<Net::ACL::Match::IP>, B<Net::ACL::Match::Prefix>,
-B<Net::ACL::Match::List>, B<Net::ACL::Match::Scalar>,
-B<Net::ACL::Match::Regexp>
+Net::ACL::Rule, Net::ACL,
+Net::ACL::Match::IP, Net::ACL::Match::Prefix,
+Net::ACL::Match::List, Net::ACL::Match::Scalar,
+Net::ACL::Match::Regexp
 
 =head1 AUTHOR
 

@@ -1,6 +1,6 @@
 #!/usr/bin/perl
 
-# $Id: Set.pm,v 1.5 2003/05/28 14:38:59 unimlo Exp $
+# $Id: Set.pm,v 1.6 2003/05/29 00:08:44 unimlo Exp $
 
 package Net::ACL::Set;
 
@@ -11,7 +11,7 @@ use vars qw( $VERSION @ISA );
 ## Inheritance and Versioning ##
 
 @ISA     = qw( Exporter );
-$VERSION = '0.03';
+$VERSION = '0.04';
 
 ## Module Imports ##
 

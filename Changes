@@ -1,6 +1,11 @@
-$Id: Changes,v 1.6 2003/05/28 14:31:55 unimlo Exp $
+$Id: Changes,v 1.7 2003/05/29 00:14:00 unimlo Exp $
 
 Revision history for Perl extension Net::ACL.
+
+0.04  Thu May 29
+	- updated more documentation
+	- fixed last prereq to match real versions (waiting for a release of Net::BGP)
+	- fixed some tests and some code (not much)
 
 0.03  Wed May 28
 	- added support for minimim/maximum prefix-lengh in Match::Prefix
@@ -10,13 +15,13 @@ Revision history for Perl extension Net::ACL.
 	- added/fixed a few configuration string syntaxes
 	- added a few test scripts and updated others
 
-0.02  Wed May 27
+0.02  Tue May 27
 	- added half a test script for route-map
 	- changed constructors for set and match objects to always have index as first argument.
 	- documentation clean-up!
 	- code clean-up!
 
-0.01  Wed May 27
+0.01  Tue May 27
 	- original version; created by h2xs 1.21
 	- first PRE-ALPHA release to public
 	- still lots of bugs and missing documentation

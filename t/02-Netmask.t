@@ -1,6 +1,6 @@
 #!/usr/bin/perl -wT
 
-# $Id: 02-Netmask.t,v 1.1 2003/05/27 02:08:36 unimlo Exp $
+# $Id: 02-Netmask.t,v 1.2 2003/05/28 22:19:20 unimlo Exp $
 
 use strict;
 
@@ -16,7 +16,8 @@ my %t = (
 
 while (my ($key,$value) = each %t)
  {
-  my $x = new Net::Netmask($key);
-  ok($x->desc eq $value,$key);
-  diag('A newer version of Net::Netmask should fix this!') unless $x->desc eq $value;
+  my $x = new2 Net::Netmask($key);
+  my $ok = (defined $x ? $x->desc : '') eq $value;
+  ok($ok,$key);
+  diag('A newer version of Net::Netmask should fix this!') unless $ok;
  };

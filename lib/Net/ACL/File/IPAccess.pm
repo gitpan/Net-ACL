@@ -1,6 +1,6 @@
 #!/usr/bin/perl
 
-# $Id: IPAccess.pm,v 1.5 2003/05/28 14:38:59 unimlo Exp $
+# $Id: IPAccess.pm,v 1.6 2003/05/29 00:08:44 unimlo Exp $
 
 package Net::ACL::File::IPAccessRule;
 
@@ -10,7 +10,7 @@ use vars qw( $VERSION @ISA );
 ## Inheritance ##
 
 @ISA     = qw( Net::ACL::Rule );
-$VERSION = '0.03';
+$VERSION = '0.04';
 
 ## Module Imports ##
 
@@ -42,7 +42,7 @@ use vars qw( $VERSION @ISA );
 ## Inheritance ##
 
 @ISA     = qw( Net::ACL::File::Standard );
-$VERSION = '0.03';
+$VERSION = '0.04';
 
 ## Module Imports ##
 

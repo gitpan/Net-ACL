@@ -1,6 +1,6 @@
 #!/usr/bin/perl
 
-# $Id: RouteMap.pm,v 1.10 2003/05/28 14:38:59 unimlo Exp $
+# $Id: RouteMap.pm,v 1.11 2003/05/29 00:08:44 unimlo Exp $
 
 package Net::ACL::File::RouteMapRule;
 
@@ -10,7 +10,7 @@ use vars qw( $VERSION @ISA );
 ## Inheritance ##
 
 @ISA     = qw( Net::ACL::RouteMapRule );
-$VERSION = '0.03';
+$VERSION = '0.04';
 
 ## Module Imports ##
 
@@ -108,7 +108,7 @@ use vars qw( $VERSION @ISA );
 ## Inheritance ##
 
 @ISA     = qw( Net::ACL::File::Standard );
-$VERSION = '0.03';
+$VERSION = '0.04';
 
 ## Module Imports ##
 

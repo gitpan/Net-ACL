@@ -1,6 +1,6 @@
 #!/usr/bin/perl
 
-# $Id: Scalar.pm,v 1.5 2003/05/28 14:38:59 unimlo Exp $
+# $Id: Scalar.pm,v 1.7 2003/05/29 00:08:44 unimlo Exp $
 
 package Net::ACL::Match::Scalar;
 
@@ -10,7 +10,7 @@ use vars qw( $VERSION @ISA );
 ## Inheritance and Versioning ##
 
 @ISA     = qw( Net::ACL::Match );
-$VERSION = '0.03';
+$VERSION = '0.04';
 
 ## Module Imports ##
 
@@ -73,9 +73,13 @@ Net::ACL::Match::Scalar - Class matching a scalar data element
 =head1 DESCRIPTION
 
 This module is a very simpel array element testing utility to allow
-simple value matching with B<Net::ACL::Rule>.
+simple value matching with L<Net::ACL::Rule|Net::ACL::Rule>.
 
 =head1 CONSTRUCTOR
+
+=over 4
+
+=item new() - create a new Net::ACL::Match::Scalar object 
 
     my $match = new Net::ACL::Match::Scalar(42,1);
 
@@ -91,17 +95,23 @@ the argument number to be matched in the match method.
 Otherwise, the value it self will be matched with the first argument of
 the match method.
 
+=back
+
 =head1 ACCESSOR METHODS
 
-I<match()>
+=over 4
+
+=item match()
 
 This function matches the arguments acording to the arguments of the
 constructor and returns either ACL_MATCH or ACL_NOMATCH as exported by
-B<NEt::ACL::Rule> with B<:rc>.
+Net::ACL::Rule with C<:rc>.
+
+=back
 
 =head1 SEE ALSO
 
-B<Net::ACL::Match>, B<Net::ACL::Rule>, B<Net::ACL>, B<Net::ACL::Set::Scalar>
+Net::ACL::Match, Net::ACL::Rule, Net::ACL, Net::ACL::Set::Scalar
 
 =head1 AUTHOR
 

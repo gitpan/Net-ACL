@@ -1,6 +1,6 @@
 #!/usr/bin/perl
 
-# $Id: Rule.pm,v 1.11 2003/05/28 14:38:59 unimlo Exp $
+# $Id: Rule.pm,v 1.13 2003/05/29 00:08:44 unimlo Exp $
 
 package Net::ACL::Rule;
 
@@ -13,7 +13,7 @@ use vars qw(
 ## Inheritance and Versioning ##
 
 @ISA     = qw( Exporter );
-$VERSION = '0.03';
+$VERSION = '0.04';
 
 ## Module Imports ##
 
@@ -285,13 +285,15 @@ Net::ACL::Rule - Class representing a generic access-list/route-map entry
 =head1 DESCRIPTION
 
 This module represent a single generic access-list and route-map entry. It is
-used by the B<Net::ACL> object. It can match anydata against a
-list of B<Net::ACL::Match> objects, and if all are matched, it
-can have a list of B<Net::ACL::Set> objects modify the data.
+used by the L<Net::ACL|Net::ACL> object. It can match anydata against a
+list of L<Net::ACL::Match|Net::ACL::Match> objects, and if all are matched, it
+can have a list of L<Net::ACL::Set|Net::ACL::Set> objects modify the data.
 
 =head1 CONSTRUCTOR
 
-I<new()> - create a new Net::ACL::Rule object
+=over 4
+
+=item new() - create a new Net::ACL::Rule object
 
     $entry = new Net::ACL::Rule(
         Action  => ACL_PERMIT
@@ -307,93 +309,109 @@ This is the constructor for Net::ACL::Rule objects. It returns a
 reference to the newly created object. The following named parameters may
 be passed to the constructor.
 
-=head2 Action
+=over 4
+
+=item Action
 
 The action parameter could be either of the constants exported using "action"
-(See B<EXPORTS>) or just a string matching permit or deny. ACL_PERMIT accepts
+(See EXPORTS) or just a string matching permit or deny. ACL_PERMIT accepts
 the data, ACL_DENY drops the data, while ACL_CONTINUE is used to indicate that
 this entry might change the data, but does not decide whether the data should
 be accepted or droped.
 
-=head2 Match
+=item Match
 
 The match parameter can have multiple forms, and my exists zero, one or more
 times. The following forms are allowed:
 
-B<Match object> - A B<Net::ACL::Match> object (or ancestor)
+=over 4
 
-B<List> - A list of B<Net::ACL::Match> objects (or ancestors)
+=item Match object - A Net::ACL::Match object (or ancestor)
 
-B<Hash> - A hash reference. The constructor will for each ($key,$value) pair
-call the B<autoconstructor> method and add the returned objects to the
+=item List - A list of Net::ACL::Match objects (or ancestors)
+
+=item Hash - A hash reference. The constructor will for each ($key,$value) pair
+call the autoconstructor() method and add the returned objects to the
 rule-set.
 
-=head2 Set
+=back
+
+=item Set
 
 The set parameter are in syntaks just like the B<Match> parameter, except
-it uses B<Net::ACL::Set> objects.
+it uses Net::ACL::Set objects.
+
+=back
+
+=back
 
 =head1 OBJECT COPY
 
-I<clone()> - clone a Net::ACL::Rule object
+=over 4
+
+=item clone() - clone a Net::ACL::Rule object
 
     $clone = $entry->clone();
 
 This method creates an exact copy of the Net::ACL::Rule object,
 with set, match and action attributes.
 
+=back
+
 =head1 ACCESSOR METHODS
 
-I<action()>
+=over 4
+
+=item action()
 
 This method returns the entry's action value. If called with an argument,
 the action value are changed to that argument.
 
-I<action_str()>
+=item action_str()
 
-This method returns the entry's action string as either 'permit' or 'deny'.
+This method returns the entry's action string as either C<permit> or C<deny>.
 If called with an argument, the action value are changed to ACL_PERMIT if
 the argument matches /permit/i - otherwise ACL_DENY.
 
-I<add_match()>
+=item add_match()
 
-I<remove_match()>
+=item remove_match()
 
-I<add_set()>
+=item add_set()
 
-I<remove_set()>
+=item remove_set()
 
 The methods adds and removes match and set rules. Each argument should be a
 match or set rule object. New rules are added in the end of the ruleset.
 
-I<match()>
+=item match()
 
 The match method get any abitrary number of arguments. The arguments are passed
-to the B<match> method of each of the B<Net::ACL::Match> objects,
-given at construction time (See B<CONSTROCTOR>). If all Match objects did
+to the B<match> method of each of the Net::ACL::Match objects,
+given at construction time - see new(). If all Match objects did
 match, the method returns ACL_MATCH. Otherwise ACL_MATCH.
 
-I<set()>
+=item set()
 
 The set method get any abitrary number of arguments. The arguments are passed
-to the first of the B<Net::ACL::Set> objects B<set> method. The
+to the first of the Net::ACL::Set objects set() method. The
 result of this function is then used to call the next. This is repeated for
-all Set objects given at construction time (See B<CONSTRUCTOR> section).
+all Set objects given at construction time - see new().
 Finaly the result of the last call is returned.
 
-I<query()>
+=item query()
 
-The query method first attempt to B<match> it's arguments with the match
+The query method first attempt to match it's arguments with the match()
 method. If this failes, it returns ACL_CONTINUE. Otherwise it uses
-the B<set> method to potentialy alter the arguments before they are returned
+the set() method to potentialy alter the arguments before they are returned
 with B<Action> given on construction prefixed.
 
-I<autoconstruction()>
+=item autoconstruction()
 
 This method is used on construction to construct rules based on
 (key,value)-pairs in a Rule argument hash reference.
 
-The first argument is the type (Match or Set). The second is the class name
+The first argument is the type (C<Match> or C<Set>). The second is the class name
 (see below). The third is the key name from the construction hash. The forth
 and if any, the rest of the arguments, are used as parameters to the
 constructor.
@@ -402,7 +420,7 @@ The return value will be the result of:
 
 	$class->new(@values);
 
-The class is by the constructor set as "Net::ACL::$type::$key"
+The class is by the constructor set as C<Net::ACL::$type::$key>
 
 B<NOTE>: Do to this, the keys of the hash are case-sensetive!
 
@@ -411,22 +429,28 @@ and/or key-value pairs and hence make more complex constructions from simple
 key-value pairs, or have more user-friendly key values (e.g. make them
 case-insensetive).
 
+=back
+
 =head1 EXPORTS
 
 The module exports the following symbols according to the rules and
-conventions of the B<Exporter> module.
+conventions of the Exporter module.
 
-=head2 :rc
+=over 4
+
+=item :rc
 
 	ACL_MATCH, ACL_NOMATCH
 
-=head2 :action
+=item :action
 
 	ACL_PERMIT, ACL_DENY, ACL_CONTINUE
 
+=back
+
 =head1 SEE ALSO
 
-B<Net::ACL>, B<Net::ACL::Set>, B<Net::ACL::Match>
+Net::ACL, Net::ACL::Set, Net::ACL::Match
 
 =head1 AUTHOR
 

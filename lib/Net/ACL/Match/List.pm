@@ -1,6 +1,6 @@
 #!/usr/bin/perl
 
-# $Id: List.pm,v 1.8 2003/05/28 14:32:24 unimlo Exp $
+# $Id: List.pm,v 1.9 2003/05/29 00:08:44 unimlo Exp $
 
 package Net::ACL::Match::List;
 
@@ -10,7 +10,7 @@ use vars qw( $VERSION @ISA );
 ## Inheritance and Versioning ##
 
 @ISA     = qw( Net::ACL::Match );
-$VERSION = '0.03';
+$VERSION = '0.04';
 
 ## Module Imports ##
 

@@ -1,6 +1,6 @@
 #!/usr/bin/perl
 
-# $Id: Bootstrap.pm,v 1.7 2003/05/28 14:38:59 unimlo Exp $
+# $Id: Bootstrap.pm,v 1.9 2003/05/29 00:08:44 unimlo Exp $
 
 package Net::ACL::Bootstrap;
 
@@ -10,7 +10,7 @@ use vars qw( $VERSION @ISA $AUTOLOAD );
 ## Inheritance and Versioning ##
 
 @ISA     = qw( Exporter );
-$VERSION = '0.03';
+$VERSION = '0.04';
 
 ## Module Imports ##
 
@@ -116,7 +116,7 @@ Net::ACL::Bootstrap - A proxy/bootstrapper class for the L<Net::ACL|Net::ACL> cl
 
 This module works as a wrapper/proxy/bootstrapper for the Net::ACL class.
 
-It makes it possible to B<renew> a list thats has not yet been constructed
+It makes it possible to renew() a list thats has not yet been constructed
 using its name and type. The real list should be constructed before any
 method is used on this object (except name(), type() and fetch()).
 
@@ -132,7 +132,7 @@ method is used on this object (except name(), type() and fetch()).
         );
 
 This is the only constructor for Net::ACL::Bootstrap class.  The arguments
-are the same as the B<renew> constructor of the Net::ACL class.
+are the same as the renew() constructor of the Net::ACL class.
 
 It either returns an existing Net::ACL object matching the arguments or a
 reference to the newly created Net::ACL::Bootstrap object.

@@ -1,6 +1,6 @@
 #!/usr/bin/perl
 
-# $Id: RouteMapRule.pm,v 1.12 2003/05/28 14:38:59 unimlo Exp $
+# $Id: RouteMapRule.pm,v 1.13 2003/05/29 00:08:44 unimlo Exp $
 
 package Net::ACL::RouteMapRule;
 
@@ -10,7 +10,7 @@ use vars qw( $VERSION @ISA @EXPORT @EXPORT_OK %EXPORT_TAGS @ACL_ROUTEMAP_INDEX )
 ## Inheritance and Versioning ##
 
 @ISA     = qw( Net::ACL::Rule );
-$VERSION = '0.03';
+$VERSION = '0.04';
 
 ## Module Imports ##
 

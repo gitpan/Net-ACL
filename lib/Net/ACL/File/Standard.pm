@@ -1,6 +1,6 @@
 #!/usr/bin/perl
 
-# $Id: Standard.pm,v 1.5 2003/05/28 14:38:59 unimlo Exp $
+# $Id: Standard.pm,v 1.7 2003/05/29 00:08:44 unimlo Exp $
 
 package Net::ACL::File::Standard;
 
@@ -10,7 +10,7 @@ use vars qw( $VERSION @ISA );
 ## Inheritance and Versioning ##
 
 @ISA     = qw( Net::ACL::File );
-$VERSION = '0.03';
+$VERSION = '0.04';
 
 ## Module Imports ##
 
@@ -29,7 +29,6 @@ sub load
 
  foreach my $rule ($config->get)
   {
-# warn "DO LOADMATCH:\n${rule}---CUT---\n";
    $obj->loadmatch($rule,$config);
   };
 
@@ -95,7 +94,7 @@ It replaces the load constructor and adds a loadmatch method that should be
 replaced in any sub-class.
 
 Any sub-clases should register them self with the Net::ACL::File class using
-the B<add_listtype> class method. After this, classes are constructed by the
+the add_listtype() class method. After this, classes are constructed by the
 Net::ACL::File->new constructor.
 
 =head1 CONSTRUCTOR
@@ -106,19 +105,23 @@ to the object created from the data in the Cisco::Reconfig object.
 
 =head1 ACCESSOR METHODS
 
-I<loadmatch()>
+=over 4
+
+=item loadmatch()
 
 The loadmatch method is called with a access-list clause - normaly a single
 line. It should construct a Net::ACL::Rule object and addit using the
-B<add_rule> inhertied method.
+add_rule() inhertied method.
+
+=back
 
 =head1 SEE ALSO
 
-B<Net::ACL::File>, B<Net::ACL>,
-B<Net::ACL::File::Community>, B<Net::ACL::File::ASPath>,
-B<Net::ACL::File::Prefix>, B<Net::ACL::File::Access>,
-B<Net::ACL::File::IPAccess>, B<Net::ACL::File::IPAccessExt>,
-B<Net::ACL::File::RouteMap>
+Cisco::Reconfig, Net::ACL::File, Net::ACL,
+Net::ACL::File::Community, Net::ACL::File::ASPath,
+Net::ACL::File::Prefix, Net::ACL::File::Access,
+Net::ACL::File::IPAccess, Net::ACL::File::IPAccessExt,
+Net::ACL::File::RouteMap
 
 
 =head1 AUTHOR
