@@ -1,6 +1,6 @@
 #!/usr/bin/perl
 
-# $Id: IPAccessExtRule.pm,v 1.8 2003/06/02 09:11:25 unimlo Exp $
+# $Id: IPAccessExtRule.pm,v 1.10 2003/06/06 18:45:02 unimlo Exp $
 
 package Net::ACL::IPAccessExtRule;
 
@@ -10,7 +10,7 @@ use vars qw( $VERSION @ISA @EXPORT @EXPORT_OK %EXPORT_TAGS @ACL_EIA_INDEX );
 ## Inheritance and Versioning ##
 
 @ISA     = qw( Net::ACL::Rule );
-$VERSION = '0.06';
+$VERSION = '0.07';
 
 ## Constants For Argument numbering ##
 
@@ -39,7 +39,7 @@ Net::ACL::IPAccessExtRule - Class representing an Extended IP Access-list rule
 
 =head1 DESCRIPTION
 
-This module represent a single extended IP access-list. It impements nothing.
+This module represents a single extended IP access-list. It implements nothing.
 It defines the order of the arguments to the query function by defining
 constants.
 

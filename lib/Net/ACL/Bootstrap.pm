@@ -1,6 +1,6 @@
 #!/usr/bin/perl
 
-# $Id: Bootstrap.pm,v 1.12 2003/06/01 19:51:08 unimlo Exp $
+# $Id: Bootstrap.pm,v 1.14 2003/06/06 18:45:02 unimlo Exp $
 
 package Net::ACL::Bootstrap;
 
@@ -10,7 +10,7 @@ use vars qw( $VERSION @ISA $AUTOLOAD );
 ## Inheritance and Versioning ##
 
 @ISA     = qw( Exporter );
-$VERSION = '0.06';
+$VERSION = '0.07';
 
 ## Module Imports ##
 
@@ -102,7 +102,7 @@ sub fetch
 
 =head1 NAME
 
-Net::ACL::Bootstrap - A proxy/bootstrapper class for the L<Net::ACL|Net::ACL> class
+Net::ACL::Bootstrap - A proxy/bootstrap class for the L<Net::ACL|Net::ACL> class
 
 =head1 SYNOPSIS
 
@@ -116,9 +116,9 @@ Net::ACL::Bootstrap - A proxy/bootstrapper class for the L<Net::ACL|Net::ACL> cl
 
 =head1 DESCRIPTION
 
-This module works as a wrapper/proxy/bootstrapper for the Net::ACL class.
+This module works as a wrapper/proxy/bootstrap for the Net::ACL class.
 
-It makes it possible to renew() a list thats has not yet been constructed
+It makes it possible to renew() a list that has not yet been constructed
 using its name and type. The real list should be constructed before any
 method is used on this object (except name(), type() and fetch()).
 
@@ -159,7 +159,7 @@ change the name or type can be done.
 
 =item AUTOLOAD()
 
-All other methods are proxyed to the real Net::ACL object.
+All other methods are forwarded to the real Net::ACL object.
 
 =back
 

@@ -1,6 +1,6 @@
 #!/usr/bin/perl
 
-# $Id: File.pm,v 1.10 2003/06/01 19:51:08 unimlo Exp $
+# $Id: File.pm,v 1.13 2003/06/06 18:45:02 unimlo Exp $
 
 package Net::ACL::File;
 
@@ -10,7 +10,7 @@ use vars qw( $VERSION @ISA );
 ## Inheritance and Versioning ##
 
 @ISA     = qw( Net::ACL );
-$VERSION = '0.06';
+$VERSION = '0.07';
 
 ## Module Imports ##
 
@@ -57,7 +57,7 @@ sub load
 
  my $res;
 
- foreach my $match (keys %listtypes)
+ foreach my $match (sort keys %listtypes)
   {
    my $aclclass = $listtypes{$match}->{_class};
    my $lists = $obj->get($match);
@@ -117,7 +117,7 @@ Net::ACL::File - Access-lists constructed from configuration file like syntax.
 =head1 DESCRIPTION
 
 This module extends the Net::ACL class with a load constructor that loads one
-or more objects from a cisco-like configuration file using Cisco::Reconfig.
+or more objects from a Cisco-like configuration file using Cisco::Reconfig.
 
 =head1 CONSTRUCTOR
 
@@ -127,7 +127,7 @@ or more objects from a cisco-like configuration file using Cisco::Reconfig.
 
     $list_hr = load Net::ACL::File($config);
 
-This special constructor parses a cisco-like router configuration.
+This special constructor parses a Cisco-like router configuration.
 
 The constructor takes one argument which should either be a string or a
 Cisco::Reconfig object.
@@ -149,7 +149,7 @@ list-types. Currently supporting the following:
 
 =back
 
-Each list-type hash value conains a new hash reference indexed on list names
+Each list-type hash value contains a new hash reference indexed on list names
 or numbers.
 
 =back
@@ -160,11 +160,11 @@ or numbers.
 
 =item add_listtype()
 
-The add_listtype class method registers a new class of access-lists.
+The add_listtype() class method registers a new class of access-lists.
 
 The first argument is the type-string of the new class.
 The second argument is the class to be registered. The class should be a
-sub-class of Net::BGP::File::Standard. Normaly this should be C<__PACKAGE__>.
+sub-class of Net::BGP::File::Standard. Normally this should be C<__PACKAGE__>.
 
 The third argument is used to match the lines in the configuration file using
 Cisco::Reconfig's get() method. If match argument is not defined,
@@ -186,7 +186,7 @@ This function tries to generate a configuration matching the one the load
 constructer got. It can read from any access-list. The resulting configuration
 is returned as a string.
 
-All ACL's which rules supports the I<asconfig> method may be used. To do so,
+All ACL's which rules support the I<asconfig> method may be used. To do so,
 use:
 
 	$conf = Net::ACL::File->asconfig($acl);

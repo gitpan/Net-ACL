@@ -1,6 +1,6 @@
 #!/usr/bin/perl
 
-# $Id: Prefix.pm,v 1.7 2003/06/01 19:51:08 unimlo Exp $
+# $Id: Prefix.pm,v 1.9 2003/06/06 18:45:02 unimlo Exp $
 
 package Net::ACL::Match::Prefix;
 
@@ -10,7 +10,7 @@ use vars qw( $VERSION @ISA );
 ## Inheritance and Versioning ##
 
 @ISA     = qw( Net::ACL::Match::IP );
-$VERSION = '0.06';
+$VERSION = '0.07';
 
 ## Module Imports ##
 
@@ -100,7 +100,7 @@ Net::ACL::Match::Prefix - Class matching IP network prefixes.
 =head1 DESCRIPTION
 
 This module is just a wrapper of the Net::Netmask module to allow it to
-operate automaticly with L<Net::ACL::Rule|Net::ACL::Rule>.
+operate automatically with L<Net::ACL::Rule|Net::ACL::Rule>.
 
 =head1 CONSTRUCTOR
 
@@ -114,10 +114,10 @@ This is the constructor for Net::ACL::Match::Prefix objects. It returns a
 reference to the newly created object. The first argument is the argument
 number of the match function that should be matched.
 
-Normaly the remaning arguments is parsed directly to the constructor of
+Normally the remaining arguments is parsed directly to the constructor of
 Net::Netmask. However if the last argument matches /(le|ge) \d+$/, the suffix
 will be removed before the Net::Netmask constructor is called and the digits
-will be used only allow prefixes greater then or eqyual (ge) OR less then or
+will be used only allow prefixes greater then or equal (ge) OR less then or
 equal (le) then that prefix length to match.
 
 =back
@@ -134,7 +134,7 @@ the prefixes are the same.
 =item mode()
 
 This method returns the mode of the prefix match object. The mode could be
-either 0 (normal), C<le> for lessthen or equal compare, or C<ge> for
+either 0 (normal), C<le> for less then or equal compare, or C<ge> for
 greater then or equal compare. If called with a value, the mode is
 changed to that value.
 

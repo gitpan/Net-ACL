@@ -1,6 +1,6 @@
 #!/usr/bin/perl
 
-# $Id: Union.pm,v 1.4 2003/06/01 19:51:08 unimlo Exp $
+# $Id: Union.pm,v 1.7 2003/06/06 18:45:02 unimlo Exp $
 
 package Net::ACL::Set::Union;
 
@@ -10,7 +10,7 @@ use vars qw( $VERSION @ISA );
 ## Inheritance and Versioning ##
 
 @ISA     = qw( Net::ACL::Set::Scalar );
-$VERSION = '0.06';
+$VERSION = '0.07';
 
 ## Module Imports ##
 
@@ -69,26 +69,36 @@ the list and another list. It is used with L<Net::ACL::Rule|Net::ACL::Rule>.
 
 =head1 CONSTRUCTOR
 
+=over 4
+
+=item new() - Construct a new Net::ACL::Set::Union object
+
     my $set = new Net::ACL::Set::Union(1,[42,45]);
 
 This is the constructor for Net::ACL::Set::Scalar objects.
 It returns a reference to the newly created object.
 
-It takes one argument. If the argument is a array reference with one element,
+It takes one argument. If the argument is an array reference with one element,
 the element will be placed instead of the first argument to the set method.
 
 If an array reference has more then one element, the second element should be
-the argument number to br replaced in the set method.
+the argument number to be replaced in the set method.
 
 Otherwise, the value will directly be used instead of the first argument of
 the set method.
 
+=back
+
 =head1 ACCESSOR METHODS
 
-I<set()>
+=over 4
 
-This function modifyes the arguments acording to the arguments of the
+=item set()
+
+This function modifies the arguments according to the arguments of the
 constructor and returns them.
+
+=back
 
 =head1 SEE ALSO
 

@@ -1,6 +1,6 @@
 #!/usr/bin/perl
 
-# $Id: Set.pm,v 1.9 2003/06/01 19:51:08 unimlo Exp $
+# $Id: Set.pm,v 1.11 2003/06/06 18:45:02 unimlo Exp $
 
 package Net::ACL::Set;
 
@@ -11,7 +11,7 @@ use vars qw( $VERSION @ISA );
 ## Inheritance and Versioning ##
 
 @ISA     = qw( Exporter );
-$VERSION = '0.06';
+$VERSION = '0.07';
 
 ## Module Imports ##
 
@@ -91,7 +91,7 @@ replaced in any ancestor object.
 
 This is the constructor for Net::ACL::Set::* objects.
 It returns a reference to the newly created object.
-It takes one argument which should describe what to set.
+It takes one argument, which should describe what to set.
 
 =back
 
@@ -102,7 +102,7 @@ It takes one argument which should describe what to set.
 =item set()
 
 This function should modify the data given as arguments (one or more) with
-the data passed to the constructor and return the modifyed data.
+the data passed to the constructor and return the modified data.
 
 =back
 

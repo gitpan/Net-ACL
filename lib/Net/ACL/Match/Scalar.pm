@@ -1,6 +1,6 @@
 #!/usr/bin/perl
 
-# $Id: Scalar.pm,v 1.9 2003/06/01 19:51:08 unimlo Exp $
+# $Id: Scalar.pm,v 1.11 2003/06/06 18:45:02 unimlo Exp $
 
 package Net::ACL::Match::Scalar;
 
@@ -10,7 +10,7 @@ use vars qw( $VERSION @ISA );
 ## Inheritance and Versioning ##
 
 @ISA     = qw( Net::ACL::Match );
-$VERSION = '0.06';
+$VERSION = '0.07';
 
 ## Module Imports ##
 
@@ -72,7 +72,7 @@ Net::ACL::Match::Scalar - Class matching a scalar data element
 
 =head1 DESCRIPTION
 
-This module is a very simpel array element testing utility to allow
+This module is a very simple array element testing utility to allow
 simple value matching with L<Net::ACL::Rule|Net::ACL::Rule>.
 
 =head1 CONSTRUCTOR
@@ -103,8 +103,8 @@ the match method.
 
 =item match()
 
-This function matches the arguments acording to the arguments of the
-constructor and returns either ACL_MATCH or ACL_NOMATCH as exported by
+This function matches the arguments according to the arguments of the
+constructor and returns either C<ACL_MATCH> or C<ACL_NOMATCH> as exported by
 Net::ACL::Rule with C<:rc>.
 
 =back

@@ -1,6 +1,6 @@
 #!/usr/bin/perl
 
-# $Id: RouteMapRule.pm,v 1.19 2003/06/01 22:41:53 unimlo Exp $
+# $Id: RouteMapRule.pm,v 1.23 2003/06/06 18:45:02 unimlo Exp $
 
 package Net::ACL::RouteMapRule;
 
@@ -10,7 +10,7 @@ use vars qw( $VERSION @ISA @EXPORT @EXPORT_OK %EXPORT_TAGS @ACL_ROUTEMAP_INDEX )
 ## Inheritance and Versioning ##
 
 @ISA     = qw( Net::ACL::Rule );
-$VERSION = '0.06';
+$VERSION = '0.07';
 
 ## Module Imports ##
 
@@ -84,8 +84,9 @@ sub autoconstruction
     }
    else
     {
-     $data = $values[0] if $data eq '';
-     return $this->SUPER::autoconstruction($type,undef,'Union',ACL_ROUTEMAP_COMMUNITY,$data);
+     my $list = [ split(/ /,$data) ];
+     $list = $values[0] if $data eq '';
+     return $this->SUPER::autoconstruction($type,undef,'Union',ACL_ROUTEMAP_COMMUNITY,$list);
     };
   }
  elsif (($arg =~ /^ip (address|next-hop) ((?:prefix-list )|)(.*)$/)
@@ -170,7 +171,7 @@ sub query
  $routesrc = $peer->peer_id if (ref $peer) && defined $peer->peer_id;
  my ($rc,$newprefix,$newroutesrc,@res) =
 	$this->SUPER::query($prefix,$routesrc,$this->_nlri2list($nlri));
- return ($rc,undef) if $rc eq ACL_DENY;
+ return ($rc,undef,undef,undef) if $rc eq ACL_DENY;
  croak 'Routemap is not allowed to change routesource'
 	unless $routesrc eq $newroutesrc;
  return ($rc,$newprefix,$this->_list2nlri(@res),$peer);
@@ -245,10 +246,10 @@ Net::ACL::RouteMapRule - Class representing a BGP-4 policy route-map rule
 
 =head1 DESCRIPTION
 
-This module represent a single route-map clause with a match part, a set part
+This module represents a single route-map clause with a match part, a set part
 and an action. This object is used by the
 L<Net::ACL::RouteMap|Net::ACL::RouteMap> object. It inherits from
-L<Net::ACL::Rule|Net::ACL::Rule>, with the only chenged method being the
+L<Net::ACL::Rule|Net::ACL::Rule>, with the only changed method being the
 autoconstructor() method.
 
 =head1 CONSTRUCTOR
@@ -259,7 +260,7 @@ autoconstructor() method.
 
 The method is inherited from the Net::ACL::Rule object. But since the
 autoconstruction() method has been replaced, some extra named arguments below
-Natch and Set are understod:
+Match and Set are understood:
 
 =over 4
 
@@ -285,9 +286,9 @@ a list of Net::ACL prefix-list names.
 
 =item Next_hop
 
-When used under Match, it's value should be a list of names of access-lists.
+When used under Match, its value should be a list of names of access-lists.
 
-When used under Set, it's value should be an IP address.
+When used under Set, its value should be an IP address.
 
 =item Routesource
 
@@ -296,7 +297,7 @@ be a list of Net::ACL access-list names.
 
 =item Origin
 
-The Origin named arguement should have a value of either IGP, EGP or
+The Origin named argument should have a value of either IGP, EGP or
 INCOMPLETE, as exported by Net::BGP::NLRI C<:origin>.
 
 =item Local_Pref

@@ -1,6 +1,6 @@
 #!/usr/bin/perl
 
-# $Id: Match.pm,v 1.11 2003/06/01 19:51:08 unimlo Exp $
+# $Id: Match.pm,v 1.13 2003/06/06 18:45:02 unimlo Exp $
 
 package Net::ACL::Match;
 
@@ -10,7 +10,7 @@ use vars qw( $VERSION @ISA );
 ## Inheritance and Versioning ##
 
 @ISA     = qw( Exporter );
-$VERSION = '0.06';
+$VERSION = '0.07';
 
 ## Module Imports ##
 
@@ -91,7 +91,7 @@ Both new and match should be replaced in any ancestor object.
 
 This is the constructor for Net::ACL::Match* objects.
 It returns a reference to the newly created object.
-It takes one argument which should describe what to match.
+It takes one argument, which should describe what to match.
 
 =back
 
@@ -108,7 +108,7 @@ Net::ACL::Rule.
 
 =item index()
 
-This function return the argument number that matched any sub-class.
+This function returns the argument number that matched any sub-class.
 Called with an argument, the argument is used as the new value.
 
 =back

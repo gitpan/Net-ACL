@@ -28,8 +28,9 @@ lib/Net/ACL/Set/Add.pm
 lib/Net/ACL/Set/Scalar.pm
 lib/Net/ACL/Set/Union.pm
 t/00-Signature.t
-t/01-Reconfig.t
+t/01-pod.t
 t/02-Netmask.t
+t/03-Reconfig.t
 t/10-MatchIP.t
 t/11-MatchPrefix.t
 t/20-MatchList.t

@@ -1,10 +1,18 @@
 #!/usr/bin/perl -wT
 
-# $Id: 80-File.t,v 1.9 2003/05/31 16:44:48 unimlo Exp $
+# $Id: 80-File.t,v 1.10 2003/06/06 19:52:05 unimlo Exp $
 
 use strict;
 
-use Test::More tests => 172;
+use Test::More tests => 171;
+
+eval <<USES;
+use Net::BGP::NLRI qw( :origin );
+use Net::BGP::Peer;
+use Net::ACL::File::RouteMap;
+USES
+
+my $hasbgp = $@ ? 0 : 1;
 
 # Use
 use_ok('Cisco::Reconfig');
@@ -16,7 +24,6 @@ use_ok('Net::ACL::File::IPAccessExt');
 use_ok('Net::ACL::File::Community');
 use_ok('Net::ACL::File::ASPath');
 use_ok('Net::ACL::File::Prefix');
-use_ok('Net::ACL::File::RouteMap');
 use Net::ACL::Rule qw( :action );
 
 my $myconf = <<CONFDATA;
@@ -39,6 +46,13 @@ ip community-list 42 permit
 ! Prefix-lists
 ip prefix-list ournet seq 10 permit 10.0.0.0/8
 ip prefix-list ournet seq 20 permit 192.168.0.0/16
+! AS Path-lists
+ip as-path access-list 1 permit .*
+ip as-path access-list 2 permit ^\$
+ip as-path access-list 55 permit ^65001_65002
+CONFDATA
+
+$myconf .= <<CONFDATA if $hasbgp;
 ! Route-maps
 route-map bgp-in deny 10
  match ip address prefix-list ournet
@@ -52,10 +66,6 @@ route-map bgp-out permit 10
 route-map bgp-out deny 20
 route-map prepend permit 10
  set aspath prepend 65001
-! AS Path-lists
-ip as-path access-list 1 permit .*
-ip as-path access-list 2 permit ^\$
-ip as-path access-list 55 permit ^65001_65002
 CONFDATA
 
 my $lists = load Net::ACL::File($myconf);
@@ -109,6 +119,7 @@ foreach my $pair (
 	)
  {
   my ($type,$name,@tests) = @{$pair};
+  next unless $type ne 'route-map' || $hasbgp;
   my $list1 = $lists->{$type}->{$name};
   ok(defined $list1,"Got something for $type $name");
   next unless defined $list1;
@@ -155,6 +166,10 @@ foreach my $pair (
     ok(&mycompare($output,\@res),"Query test output $i for $type $name");
    };
  };
+
+SKIP: {
+skip('No recent Net::BGP::NLRI',39) unless $hasbgp;
+}
 
 # Got it all?
 my $noleft = scalar (keys %myconf);

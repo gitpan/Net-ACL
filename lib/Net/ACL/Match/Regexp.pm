@@ -1,6 +1,6 @@
 #!/usr/bin/perl
 
-# $Id: Regexp.pm,v 1.8 2003/06/01 19:51:08 unimlo Exp $
+# $Id: Regexp.pm,v 1.10 2003/06/06 18:45:02 unimlo Exp $
 
 package Net::ACL::Match::Regexp;
 
@@ -10,7 +10,7 @@ use vars qw( $VERSION @ISA );
 ## Inheritance and Versioning ##
 
 @ISA     = qw( Net::ACL::Match::Scalar );
-$VERSION = '0.06';
+$VERSION = '0.07';
 
 ## Module Imports ##
 
@@ -48,7 +48,7 @@ Net::ACL::Match::Regexp - Class matching a scalar data element
 
 =head1 DESCRIPTION
 
-This module is a very simpel array element testing with regular expresion
+This module is a very simple array element testing with regular expression
 utility to allow simple value matching with L<Net::ACL::Rule|Net::ACL::Rule>.
 
 =head1 CONSTRUCTOR
@@ -59,21 +59,21 @@ This is the constructor for Net::ACL::Match::Regexp objects.
 It returns a reference to the newly created object.
 
 It takes one argument. If the argument is a array reference with one element,
-the element will be used as a regexp pattern to matched with the first
+the element will be used as a regular expression pattern to matched with the first
 argument to the match method.
 
 If an array reference has more then one element, the second element should be
 the argument number to be matched in the match method.
 
-Otherwise, the value it self will be used as a regexp pattern to match the
+Otherwise, the value it self will be used as a regular expression pattern to match the
 first argument of the match method.
 
 =head1 ACCESSOR METHODS
 
 I<match()>
 
-This function matches the arguments acording to the arguments of the
-constructor and returns either ACL_MATCH or ACL_NOMATCH as exported by
+This function matches the arguments according to the arguments of the
+constructor and returns either C<ACL_MATCH> or C<ACL_NOMATCH> as exported by
 Net::ACL::Rule with C<:rc>.
 
 =head1 SEE ALSO

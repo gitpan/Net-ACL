@@ -1,6 +1,6 @@
 #!/usr/bin/perl
 
-# $Id: RouteMap.pm,v 1.15 2003/06/02 09:11:25 unimlo Exp $
+# $Id: RouteMap.pm,v 1.18 2003/06/06 18:45:02 unimlo Exp $
 
 package Net::ACL::File::RouteMapRule;
 
@@ -10,7 +10,7 @@ use vars qw( $VERSION @ISA );
 ## Inheritance ##
 
 @ISA     = qw( Net::ACL::RouteMapRule );
-$VERSION = '0.06';
+$VERSION = '0.07';
 
 ## Module Imports ##
 
@@ -28,7 +28,6 @@ sub asconfig
  # Add match rules
  foreach my $match (@{$this->{_match}})
   {
-#use Data::Dumper; warn Dumper($match);
    if ($match->index == ACL_ROUTEMAP_ASPATH)
     {
      $rules .= "\n match as-path " . join(' ',$match->names);
@@ -66,14 +65,13 @@ sub asconfig
  # Add set rules
  foreach my $set (@{$this->{_set}})
   {
-#use Data::Dumper; warn Dumper($set);
    if ($set->index == ACL_ROUTEMAP_ASPATH)
     {
      $rules .= "\n set aspath prepend " . $set->value;
     }
    elsif ($set->index == ACL_ROUTEMAP_COMMUNITY)
     {
-     $rules .= "\n set community " . $set->value;
+     $rules .= "\n set community " . join(' ',@{$set->value});
     }
    elsif ($set->index == ACL_ROUTEMAP_MED)
     {
@@ -108,7 +106,7 @@ use vars qw( $VERSION @ISA );
 ## Inheritance ##
 
 @ISA     = qw( Net::ACL::File::Standard );
-$VERSION = '0.06';
+$VERSION = '0.07';
 
 ## Module Imports ##
 
@@ -126,9 +124,7 @@ sub loadmatch
 {
  my ($this,$block,$super) = @_;
 
- #$z+=1; warn "RULE1($z): $block";
  $block = $super unless $block =~ /route-map/;
- #warn "RULE2($z): $block";
 
  # Get name and action!
  croak "Configuration header line format error in line: '$block'"
@@ -142,7 +138,6 @@ sub loadmatch
    next if $entry1->text eq '';
    foreach my $entry ($entry1 =~ /\n./ ? $entry1->get : $entry1)
     {
-     # $ii+=1; warn "ENTRY($z,$ii): $entry";
      croak "Configuration content line format error in line: '$entry'"
 	unless $entry =~ /^ (set|match) (.*)$/i;
      my ($what,$data) = ($1,$2);

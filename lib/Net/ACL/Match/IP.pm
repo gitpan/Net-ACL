@@ -1,6 +1,6 @@
 #!/usr/bin/perl
 
-# $Id: IP.pm,v 1.13 2003/06/01 19:51:08 unimlo Exp $
+# $Id: IP.pm,v 1.15 2003/06/06 18:45:02 unimlo Exp $
 
 package Net::ACL::Match::IP;
 
@@ -10,7 +10,7 @@ use vars qw( $VERSION @ISA );
 ## Inheritance and Versioning ##
 
 @ISA     = qw( Net::ACL::Match );
-$VERSION = '0.06';
+$VERSION = '0.07';
 
 ## Module Imports ##
 
@@ -84,11 +84,13 @@ Net::ACL::Match::IP - Class matching IP addresses against an IP or network
 =head1 DESCRIPTION
 
 This module is just a wrapper of the Net::Netmask module to allow it to
-operate automaticly with L<Net::ACL::Rule|Net::ACL::Rule>.
+operate automatically with L<Net::ACL::Rule|Net::ACL::Rule>.
 
 =head1 CONSTRUCTOR
 
-I<new()> - create a new Net::ACL::Match::IP object
+=over 4
+
+=item new() - create a new Net::ACL::Match::IP object
 
     $match = new Net::ACL::Match::IP(1,'10.0.0.0/8');
 
@@ -97,24 +99,30 @@ reference to the newly created object. The first argument is the argument
 number of the match method that should be matched. The remaining arguments
 is parsed directly to the constructor of Net::Netmask.
 
+=back
+
 =head1 ACCESSOR METHODS
 
-I<net()>
+=over 4
+
+=item net()
 
 The net method returns the Net::Netmask object representing the network
 matched. If called with a Net::Netmask object, the net used for matching is
 changed to that object. If called with a anything else, the Net::Netmask
 constructor will be used to convert it to a Net::Netmask object.
 
-I<index()>
+=item index()
 
 The index method returns the index of the argument that will be matched.
 If called with an argument, the index is changed to that argument.
 
-I<match()>
+=item match()
 
 The match method invoke the match() method of the Net::Netmask object constructed
 by new(). The index value defines which argument is passed on to new().
+
+=back
 
 =head1 SEE ALSO
 

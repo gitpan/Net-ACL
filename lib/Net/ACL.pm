@@ -1,6 +1,6 @@
 #!/usr/bin/perl
 
-# $Id: ACL.pm,v 1.15 2003/06/01 19:51:08 unimlo Exp $
+# $Id: ACL.pm,v 1.17 2003/06/06 18:45:02 unimlo Exp $
 
 package Net::ACL;
 
@@ -10,7 +10,7 @@ use vars qw( $VERSION @ISA );
 ## Inheritance and Versioning ##
 
 @ISA     = qw( Exporter );
-$VERSION = '0.06';
+$VERSION = '0.07';
 
 ## Module Imports ##
 
@@ -287,7 +287,7 @@ Net::ACL - Class representing a generic access-list/route-map
 
 =head1 DESCRIPTION
 
-This module represent a generic access-list and route-map. It uses the
+This module represents a generic access-list and route-map. It uses the
 L<Net::ACL::Rule|Net::ACL::Rule> object to represent the rules.
 
 =head1 CONSTRUCTOR
@@ -318,13 +318,13 @@ renew() constructor.
 The type parameter is optional and defaults to the class name. It is used
 have different namespaces for the Name parameter. It is intended to have
 values like 'ip-accesslist', 'prefix-list', 'as-path-filter' and 'route-map'.
-This way the same name or number of an accesslist could be reused in each
+This way the same name or number of an access-list could be reused in each
 class.
 
 =item Rule
 
-The rule parameter could be pressent one or more times. Each one can have
-mulitple types:
+The rule parameter could be present one or more times. Each one can have
+multiple types:
 
 =over 4
 
@@ -355,8 +355,8 @@ currently ignored, but might later be used as sequance numbers or labels.
 
 The renew constructor localizes an existing ACL object from either
 Name, (Name,Type)-pair or the object in string context (e.g.
-C<Net::ACL=HASH(0x823ff84)>). The Name and Yype arguments
-have simular meaning as for the new() constructor.
+C<Net::ACL=HASH(0x823ff84)>). The Name and Type arguments
+have similar meaning as for the new() constructor.
 
 =back
 
@@ -382,16 +382,16 @@ later.
 
 =item type()
 
-The name and type methods returns the access-list name and type fields
-respectivly. If called with an argument they change the value to that of the
+The name() and type() methods return the access-list name and type fields
+respectively. If called with an argument they change the value to that of the
 argument.
 
 =item match()
 
-The match method implements the basic idear of a stadard router access-list
+The match method implements the basics of a standard router access-list
 matching.
 
-It get any abitrary number of arguments. The arguments are passed
+It gets any arbitrary number of arguments. The arguments are passed
 to the match() method of each of the Net::ACL::Rule rules
 except any object which have the action() field set to C<ACL_CONTINUE>.
 When a match() method returns C<ACL_MATCH>, the action() of that
@@ -399,19 +399,19 @@ entry is returned.
 
 =item query()
 
-The query method implements the basic idear of a route-map execution.
+The query method implements the basics of a route-map execution.
 
 It calls the Net::ACL::Rule rules query() method
 one by one as long as they return C<ACL_CONTINUE>.
 
 The function returns the result code (C<ACL_PERMIT> or C<ACL_DENY>)
-and the, posibly modified, arguments of the function.
+and the, possibly modified, arguments of the function.
 
 =item add_rule()
 
 =item remove_rule()
 
-The add and remove rule methods can add and remove rules after object
+The add() and remove() rule methods can add and remove rules after object
 construction.
 
 =back

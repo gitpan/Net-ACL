@@ -1,18 +1,24 @@
 #!/usr/bin/perl -wT
 
-# $Id: 50-RouteMap.t,v 1.6 2003/06/01 22:41:53 unimlo Exp $
+# $Id: 50-RouteMap.t,v 1.8 2003/06/06 19:28:40 unimlo Exp $
 
 use strict;
 
-use Test::More tests => 90;
 
 eval <<USES;
 use Net::BGP::NLRI qw( :origin );
 use Net::BGP::Peer;
-use Net::BGP::RIBEntry;
 USES
 
-my $hasbgp = $@ ? 0 : 1;
+if ($@)
+ {
+  eval "use Test::More skip_all => 'No resent Net::BGP installed';";
+  exit;
+ }
+else
+ {
+  eval "use Test::More tests => 89;";
+ };
 
 # Use
 use_ok('Net::ACL');
@@ -21,7 +27,6 @@ use_ok('Net::ACL::File::ASPath');
 use_ok('Net::ACL::File::Community');
 use_ok('Net::ACL::File::IPAccess');
 use_ok('Net::ACL::File::Prefix');
-use_ok('Net::ACL::RouteMapRule');
 use_ok('Net::ACL::RouteMapRule');
 use Net::ACL::Rule qw( :rc :action );
 
@@ -105,10 +110,6 @@ ok($all->isa('Net::ACL::RouteMapRule'),'Complex construction 4');
 
 my @rules = ($aspath_comm, $deny_comm, $loc10to20, $all);
 		
-SKIP: {
-
-skip('Net::BGP::NLRI not installed',67) unless $hasbgp;
-use Net::BGP::NLRI qw( :origin );
 my $peer = new Net::BGP::Peer(
 	ThisID	=> '10.1.1.1',
 	PeerID	=> '!0.2.2.2'
@@ -127,7 +128,7 @@ my $nlri2 = new Net::BGP::NLRI(
         AtomicAggregate => 1,
         MED             => 200,
         NextHop         => '10.0.0.1',
-        Origin          => INCOMPLETE
+        Origin          => &Net::BGP::NLRI::INCOMPLETE
 	);
 my $nlri2a = new Net::BGP::NLRI(
 	ASPath		=> "(65001 65002) 65001",
@@ -137,7 +138,7 @@ my $nlri2a = new Net::BGP::NLRI(
         AtomicAggregate => 1,
         MED             => 200,
         NextHop         => '10.0.0.1',
-        Origin          => INCOMPLETE
+        Origin          => &Net::BGP::NLRI::INCOMPLETE
 	);
 my $nlri3 = new Net::BGP::NLRI(
         ASPath          => "65001 65002",
@@ -215,5 +216,4 @@ foreach my $testpair (@tests)
       || ($peer eq $newpeer),"Query Peer $tno - $no");
    };
  };
-}; # Skip-block
 

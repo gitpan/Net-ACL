@@ -1,6 +1,6 @@
 #!/usr/bin/perl
 
-# $Id: List.pm,v 1.12 2003/06/01 19:51:08 unimlo Exp $
+# $Id: List.pm,v 1.14 2003/06/06 18:45:02 unimlo Exp $
 
 package Net::ACL::Match::List;
 
@@ -10,7 +10,7 @@ use vars qw( $VERSION @ISA );
 ## Inheritance and Versioning ##
 
 @ISA     = qw( Net::ACL::Match );
-$VERSION = '0.06';
+$VERSION = '0.07';
 
 ## Module Imports ##
 
@@ -120,7 +120,7 @@ Net::ACL::Match::List - Class matching data against one or more access-lists
 =head1 DESCRIPTION
 
 This module match data against one or more access-lists. It only matches if
-data if data is permited by all access-lists.
+data if data is permitted by all access-lists.
 
 =head1 CONSTRUCTOR
 
@@ -147,15 +147,15 @@ An access-list to be matched against.
 
 =item HASH reference
 
-A reference to a hash passed to Net::ACL->renew
+A reference to a hash passed to Net::ACL->renew()
 
 =item SCALAR
 
-A scalar passed to Net::ACL->renew
+A scalar passed to Net::ACL->renew()
 
 =item ARRAY reference
 
-A reference to an array one of the abover 3 types. Used
+A reference to an array one of the above 3 types. Used
 to match multiple lists.
 
 =back
@@ -174,11 +174,11 @@ ACL_NOMATCH.
 
 =item names()
 
-Return a list with all mached lists names.
+Return a list with all match lists names.
 
 =item type()
 
-Returns the type of the first list thats matched - or undef if no lists are
+Returns the type of the first list that is matched - or C<undef> if no lists are
 matched.
 
 =back

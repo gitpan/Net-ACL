@@ -1,6 +1,6 @@
 #!/usr/bin/perl
 
-# $Id: Prefix.pm,v 1.10 2003/06/01 19:51:08 unimlo Exp $
+# $Id: Prefix.pm,v 1.11 2003/06/06 18:45:02 unimlo Exp $
 
 package Net::ACL::File::PrefixRule;
 
@@ -10,7 +10,7 @@ use vars qw( $VERSION @ISA );
 ## Inheritance ##
 
 @ISA     = qw( Net::ACL::Rule );
-$VERSION = '0.06';
+$VERSION = '0.07';
 
 ## Module Imports ##
 
@@ -42,7 +42,7 @@ use vars qw( $VERSION @ISA );
 ## Inheritance ##
 
 @ISA     = qw( Net::ACL::File::Standard );
-$VERSION = '0.06';
+$VERSION = '0.07';
 
 ## Module Imports ##
 

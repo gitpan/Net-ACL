@@ -1,6 +1,6 @@
 #!/usr/bin/perl -wT
 
-# $Id: 01-Reconfig.t,v 1.2 2003/05/27 16:12:06 unimlo Exp $
+# $Id: 03-Reconfig.t,v 1.1 2003/06/06 08:44:28 unimlo Exp $
 
 use strict;
 

@@ -1,6 +1,6 @@
 #!/usr/bin/perl
 
-# $Id: Standard.pm,v 1.9 2003/06/01 19:51:08 unimlo Exp $
+# $Id: Standard.pm,v 1.11 2003/06/06 18:45:02 unimlo Exp $
 
 package Net::ACL::File::Standard;
 
@@ -10,7 +10,7 @@ use vars qw( $VERSION @ISA );
 ## Inheritance and Versioning ##
 
 @ISA     = qw( Net::ACL::File );
-$VERSION = '0.06';
+$VERSION = '0.07';
 
 ## Module Imports ##
 
@@ -89,13 +89,13 @@ Net::ACL::File::Standard - Standard access-lists loaded from configuration strin
 =head1 DESCRIPTION
 
 This is an abstract class that extends the Net::ACL::File class. It has the
-common features of loading a standard access-list in cisco-notation.
-It replaces the load constructor and adds a loadmatch method that should be
+common features of loading a standard access-list in Cisco-notation.
+It replaces the load constructor and adds a loadmatch() method that should be
 replaced in any sub-class.
 
-Any sub-clases should register them self with the Net::ACL::File class using
+Any sub-classes should register them self with the Net::ACL::File class using
 the add_listtype() class method. After this, classes are constructed by the
-Net::ACL::File->new constructor.
+Net::ACL::File new() constructor.
 
 =head1 CONSTRUCTOR
 
@@ -109,9 +109,9 @@ to the object created from the data in the Cisco::Reconfig object.
 
 =item loadmatch()
 
-The loadmatch method is called with a access-list clause - normaly a single
-line. It should construct a Net::ACL::Rule object and addit using the
-add_rule() inhertied method.
+The loadmatch() method is called with an access-list clause - normally a single
+line. It should construct a Net::ACL::Rule object and add it using the
+add_rule() inherited method.
 
 =back
 

@@ -1,6 +1,6 @@
 #!/usr/bin/perl
 
-# $Id: Add.pm,v 1.8 2003/06/01 19:51:08 unimlo Exp $
+# $Id: Add.pm,v 1.11 2003/06/06 18:45:02 unimlo Exp $
 
 package Net::ACL::Set::Add;
 
@@ -10,7 +10,7 @@ use vars qw( $VERSION @ISA );
 ## Inheritance and Versioning ##
 
 @ISA     = qw( Net::ACL::Set::Scalar );
-$VERSION = '0.06';
+$VERSION = '0.07';
 
 ## Module Imports ##
 
@@ -23,7 +23,6 @@ sub set
 {
  my $this = shift;
  my @data = @_;
-use Data::Dumper;
  my $ax = $data[$this->{_index}];
  # $data[$this->{_index}] += $this->{_value}; # Segfault in some ASPath stuff!
  $data[$this->{_index}] = $data[$this->{_index}] + $this->{_value};
@@ -50,11 +49,15 @@ Net::ACL::Set::Add - Class adding a value to a data element
 
 =head1 DESCRIPTION
 
-This module is a very simpel array element addition utility to allow
+This module is a very simple array element addition utility to allow
 simple value addition with Net::ACL::Rule. Note that using overloading
 of the "+=" operator, complex operation can be executed for objects.
 
 =head1 CONSTRUCTOR
+
+=over 4
+
+=item new()
 
     my $set = new Net::ACL::Set::Add(42,1);
 
@@ -62,14 +65,20 @@ This is the constructor for Net::ACL::Set::Add objects.
 It returns a reference to the newly created object.
 
 The first argument is the argument number to set that should be modified.
-The second arguement are the value added the the element.
+The second argument are the value added the the element.
+
+=back
 
 =head1 ACCESSOR METHODS
 
-I<set()>
+=over 4
+
+=item set()
 
 This function modifies the arguments according to the arguments of the
 constructor and returns them.
+
+=back
 
 =head1 SEE ALSO
 

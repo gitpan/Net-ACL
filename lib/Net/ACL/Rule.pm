@@ -1,6 +1,6 @@
 #!/usr/bin/perl
 
-# $Id: Rule.pm,v 1.17 2003/06/01 19:51:08 unimlo Exp $
+# $Id: Rule.pm,v 1.19 2003/06/06 18:45:02 unimlo Exp $
 
 package Net::ACL::Rule;
 
@@ -13,7 +13,7 @@ use vars qw(
 ## Inheritance and Versioning ##
 
 @ISA     = qw( Exporter );
-$VERSION = '0.06';
+$VERSION = '0.07';
 
 ## Module Imports ##
 
@@ -290,8 +290,8 @@ Net::ACL::Rule - Class representing a generic access-list/route-map entry
 
 =head1 DESCRIPTION
 
-This module represent a single generic access-list and route-map entry. It is
-used by the L<Net::ACL|Net::ACL> object. It can match anydata against a
+This module represents a single generic access-list and route-map entry. It is
+used by the L<Net::ACL|Net::ACL> object. It can match any data against a
 list of L<Net::ACL::Match|Net::ACL::Match> objects, and if all are matched, it
 can have a list of L<Net::ACL::Set|Net::ACL::Set> objects modify the data.
 
@@ -336,7 +336,7 @@ times. The following forms are allowed:
 
 =item List - A list of Net::ACL::Match objects (or ancestors)
 
-=item Hash - A hash reference. The constructor will for each ($key,$value) pair
+=item Hash - A hash reference. The constructor will for each key/value-pair
 call the autoconstructor() method and add the returned objects to the
 rule-set.
 
@@ -344,7 +344,7 @@ rule-set.
 
 =item Set
 
-The set parameter are in syntaks just like the C<Match> parameter, except
+The set parameter are in syntax just like the C<Match> parameter, except
 it uses Net::ACL::Set objects.
 
 =back
@@ -371,7 +371,7 @@ with set, match and action attributes.
 =item action()
 
 This method returns the entry's action value. If called with an argument,
-the action value are changed to that argument.
+the action value is changed to that argument.
 
 =item action_str()
 
@@ -387,40 +387,39 @@ the argument matches /permit/i - otherwise ACL_DENY.
 
 =item remove_set()
 
-The methods adds and removes match and set rules. Each argument should be a
-match or set rule object. New rules are added in the end of the ruleset.
+The methods add and remove match and set rules. Each argument should be a
+match or set rule object. New rules are added in the end of the rule set.
 
 =item match()
 
-The match method get any abitrary number of arguments. The arguments are passed
+The match method gets any arbitrary number of arguments. The arguments are passed
 to the match() method of each of the Net::ACL::Match objects,
 given at construction time - see new(). If all Match objects did
 match, the method returns ACL_MATCH. Otherwise ACL_MATCH.
 
 =item set()
 
-The set method get any abitrary number of arguments. The arguments are passed
+The set method gets any arbitrary number of arguments. The arguments are passed
 to the first of the Net::ACL::Set objects set() method. The
 result of this function is then used to call the next. This is repeated for
 all Set objects given at construction time - see new().
-Finaly the result of the last call is returned.
+Finally the result of the last call is returned.
 
 =item query()
 
 The query method first attempt to match it's arguments with the match()
-method. If this failes, it returns ACL_CONTINUE. Otherwise it uses
-the set() method to potentialy alter the arguments before they are returned
+method. If this fails, it returns ACL_CONTINUE. Otherwise it uses
+the set() method to potentially alter the arguments before they are returned
 with C<Action> given on construction prefixed.
 
 =item autoconstruction()
 
 This method is used on construction to construct rules based on
-(key,value)-pairs in a Rule argument hash reference.
+key/value-pairs in a Rule argument hash reference.
 
-The first argument is the type (C<Match> or C<Set>). The second is the class name
-(see below). The third is the key name from the construction hash. The forth
-and if any, the rest of the arguments, are used as parameters to the
-constructor.
+The first argument is the type (C<Match> or C<Set>). The second is the class
+name (see below). The third is the key name from the construction hash. The
+forth and any remaining arguments are used as parameters to the constructor.
 
 The return value will be the result of:
 
@@ -428,12 +427,12 @@ The return value will be the result of:
 
 The class is by the constructor set as C<Net::ACL::$type::$key>
 
-B<NOTE>: Do to this, the keys of the hash are case-sensetive!
+B<NOTE>: Do to this; the keys of the hash are case-sensitive!
 
-By replacing this function in a sub-class, it is posible to modify the class
+By replacing this function in a sub-class, it is possible to modify the class
 and/or key-value pairs and hence make more complex constructions from simple
 key-value pairs, or have more user-friendly key values (e.g. make them
-case-insensetive).
+case-insensitive).
 
 =back
 
