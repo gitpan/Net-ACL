@@ -1,6 +1,6 @@
 #!/usr/bin/perl
 
-# $Id: IPAccessExtRule.pm,v 1.4 2003/05/29 00:08:44 unimlo Exp $
+# $Id: IPAccessExtRule.pm,v 1.6 2003/05/31 16:58:07 unimlo Exp $
 
 package Net::ACL::IPAccessExtRule;
 
@@ -10,7 +10,7 @@ use vars qw( $VERSION @ISA @EXPORT @EXPORT_OK %EXPORT_TAGS @ACL_EIA_INDEX );
 ## Inheritance and Versioning ##
 
 @ISA     = qw( Net::ACL::Rule );
-$VERSION = '0.04';
+$VERSION = '0.05';
 
 ## Constants For Argument numbering ##
 
@@ -46,7 +46,7 @@ constants - See <EXPORTS>.
 =head1 EXPORTS
 
 The module exports the following symbols according to the rules and
-conventions of the B<Exporter> module.
+conventions of the Exporter module.
 
 =head2 :index
 
@@ -54,7 +54,7 @@ conventions of the B<Exporter> module.
 
 =head1 SEE ALSO
 
-B<Net::ACL>, B<Net::ACL::Rule>
+Net::ACL, Net::ACL::Rule
 
 =head1 AUTHOR
 

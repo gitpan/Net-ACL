@@ -1,6 +1,6 @@
 #!/usr/bin/perl
 
-# $Id: RouteMapRule.pm,v 1.13 2003/05/29 00:08:44 unimlo Exp $
+# $Id: RouteMapRule.pm,v 1.16 2003/05/31 16:49:07 unimlo Exp $
 
 package Net::ACL::RouteMapRule;
 
@@ -10,28 +10,33 @@ use vars qw( $VERSION @ISA @EXPORT @EXPORT_OK %EXPORT_TAGS @ACL_ROUTEMAP_INDEX )
 ## Inheritance and Versioning ##
 
 @ISA     = qw( Net::ACL::Rule );
-$VERSION = '0.04';
+$VERSION = '0.05';
 
 ## Module Imports ##
 
 use Carp;
-use Net::ACL::Rule;
+use Net::ACL::Rule qw( :rc :action );
+use Net::BGP::NLRI;
 
 ## Constants For Argument numbering ##
 
-sub ACL_ROUTEMAP_ASPATH    { 0; };
+sub ACL_ROUTEMAP_PREFIX    { 0; };
 sub ACL_ROUTEMAP_COMMUNITY { 1; };
-sub ACL_ROUTEMAP_PREFIX    { 2; };
+sub ACL_ROUTEMAP_ASPATH    { 2; };
 sub ACL_ROUTEMAP_NEXTHOP   { 3; };
 sub ACL_ROUTEMAP_LOCALPREF { 4; };
 sub ACL_ROUTEMAP_MED       { 5; };
+sub ACL_ROUTEMAP_ORIGIN    { 6; };
 
-## Export Tag Definitions ##
+my @FIELDNAMES = ( qw( prefix communities as_path next_hop local_pref med origin ) ); 
 
 @ACL_ROUTEMAP_INDEX = qw (
-	ACL_ROUTEMAP_ASPATH ACL_ROUTEMAP_COMMUNITY ACL_ROUTEMAP_PREFIX
-	ACL_ROUTEMAP_NEXTHOP ACL_ROUTEMAP_LOCALPREF ACL_ROUTEMAP_MED
+	ACL_ROUTEMAP_PREFIX
+	ACL_ROUTEMAP_COMMUNITY ACL_ROUTEMAP_ASPATH ACL_ROUTEMAP_NEXTHOP
+	ACL_ROUTEMAP_LOCALPREF ACL_ROUTEMAP_MED ACL_ROUTEMAP_ORIGIN
 	);
+
+## Export Tag Definitions ##
 
 @EXPORT      = ();
 @EXPORT_OK   = ( @ACL_ROUTEMAP_INDEX );
@@ -56,15 +61,47 @@ sub autoconstruction
   {
    my $data = $1;
    $data =~ s/^ //;
-   $data = $values[0] if $data eq '';
-   return $this->SUPER::autoconstruction($type,undef,'Scalar',ACL_ROUTEMAP_COMMUNITY,$data);
+   if ($type eq 'Match')
+    {
+     my @l;
+     push(@l,$data) if $data ne '';
+     push(@l,@{$values[0]}) if ref $values[0] eq 'ARRAY';
+     if ($l[0] =~ /:/) # Communities 
+      {
+       return $this->SUPER::autoconstruction($type,undef,'Member',ACL_ROUTEMAP_COMMUNITY,@l);
+      };
+     my @lists;
+     foreach my $l (@l)
+      {
+       push(@lists,{ Name => $l, Type=> 'community-list' });
+      };
+     return $this->SUPER::autoconstruction($type,undef,'List',ACL_ROUTEMAP_COMMUNITY,@lists);
+    }
+   else
+    {
+     $data = $values[0] if $data eq '';
+     return $this->SUPER::autoconstruction($type,undef,'Union',ACL_ROUTEMAP_COMMUNITY,$data);
+    };
   }
- elsif ( $arg =~ /^ip (address|next-hop) ((?:prefix-list )|)(.*)$/ )
+ elsif (($arg =~ /^ip (address|next-hop) ((?:prefix-list )|)(.*)$/)
+     || ($arg =~ /^(prefix|next[ _-]?hop)/i) && ($type eq 'Match'))
   {
-   my $index = $1 eq 'address' ? ACL_ROUTEMAP_PREFIX : ACL_ROUTEMAP_NEXTHOP;
-   my $ltype = $2 eq '' ? 'access-list' : 'prefix-list';
+   my ($index,$ltype);
+   if (defined $2)
+    {
+     $index = $1 eq 'address' ? ACL_ROUTEMAP_PREFIX : ACL_ROUTEMAP_NEXTHOP;
+     $ltype = $2 eq '' ? 'access-list' : 'prefix-list';
+     $values[0] = $3;
+    }
+   else
+    {
+     $index = $1;
+     $ltype = $index =~ /prefix/i ? 'prefix-list' : 'access-list';
+     $index = $index =~ /prefix/i ? ACL_ROUTEMAP_PREFIX : ACL_ROUTEMAP_NEXTHOP;
+     @values = @{$values[0]} if ref $values[0] eq 'ARRAY';
+    }
    my @lists;
-   foreach my $list (split(/ /,$3))
+   foreach my $list (split(/ /,$values[0]))
     {
      if ($list =~ /^\d{3}$/)
       {
@@ -77,17 +114,9 @@ sub autoconstruction
     };
    return $this->SUPER::autoconstruction($type,undef,'List',$index,@lists);
   }
- elsif ($arg =~ /next[ _-]?hop/i )
+ elsif (($arg =~ /next[ _-]?hop/i ) && ($type eq 'Set'))
   {
-   if ($type eq 'Set')
-    {
-     return $this->SUPER::autoconstruction($type,undef,'Scalar',ACL_ROUTEMAP_NEXTHOP,@values);
-    };
-   if ($values[0] =~ /(prefix-list) (.*)$/)
-    {
-     return $this->SUPER::autoconstruction($type,undef,'List',ACL_ROUTEMAP_NEXTHOP,Name=>$2,Type=>$1);
-    };
-   return $this->SUPER::autoconstruction($type,undef,'IP',ACL_ROUTEMAP_NEXTHOP,@values);
+   return $this->SUPER::autoconstruction($type,undef,'Scalar',ACL_ROUTEMAP_NEXTHOP,@values);
   }
  elsif ( $arg =~ /MED/i )
   {
@@ -101,26 +130,63 @@ sub autoconstruction
  elsif (($arg =~ /as[ _-]?path(?: (.*))?$/i ) && ( $type eq 'Match'))
   {
    my @lists;
-   my @l = defined $1 ? $1 : @values;
+   my @l = defined $1 ? $1 : ref $values[0] eq 'ARRAY' ? @{$values[0]} : @values;
    foreach my $list (@l)
     {
      push(@lists,{Name=>$list,Type=>'as-path-list'});
     };
    return $this->SUPER::autoconstruction($type,undef,'List',ACL_ROUTEMAP_ASPATH,@lists);
   }
- elsif (($arg =~ /(?:as[ _-]?path)|(?:prepend)/i ) && ( $type eq 'Set'))
+ elsif (($arg =~ /(?:as[ _-]?path)|(?:prepend)$/i ) && ($type eq 'Set'))
   {
    return $this->SUPER::autoconstruction($type,undef,'Add',ACL_ROUTEMAP_ASPATH,@values);
-  }
- elsif (($arg =~ /prefix/i ) && ( $type eq 'Match'))
-  {
-   return $this->SUPER::autoconstruction($type,undef,'Prefix',ACL_ROUTEMAP_PREFIX,@values);
   }
  if ($ruleclass =~ / /)
   {
    croak "Unknown RouteMap construction key '$arg'";
   };
  return $this->SUPER::autoconstruction($type,$ruleclass,$arg,@values);
+}
+
+sub match
+{
+ my ($this,$prefix,$nlri) = @_;
+ return $this->SUPER::match($prefix,$this->_nlri2list($nlri));
+}
+
+sub query
+{
+ my ($this,$prefix,$nlri) = @_;
+ my ($rc,$newprefix,@res) = $this->SUPER::query($prefix,$this->_nlri2list($nlri));
+ return ($rc,undef) if $rc eq ACL_DENY;
+ return ($rc,$newprefix,$this->_list2nlri(@res));
+}
+
+## Private Object Methods ##
+
+sub _nlri2list
+{
+ my ($this,$nlri) = @_;
+ croak "Did't get an NLRI as argument" unless ref $nlri && $nlri->isa('Net::BGP::NLRI');
+ my @arg = ();
+ foreach my $field (@FIELDNAMES)
+  {
+   next if $field eq 'prefix';
+   push(@arg, $nlri->$field());
+  };
+ return @arg;
+}
+
+sub _list2nlri
+{
+ my ($this,@res) = @_;
+ my $nlri = new Net::BGP::NLRI();
+ foreach my $num (1.. $#FIELDNAMES)
+  {
+   my $field = $FIELDNAMES[$num];
+   $nlri->$field($res[$num-1]);
+  };
+ return $nlri;
 }
 
 ## POD ##
@@ -139,13 +205,12 @@ Net::ACL::RouteMapRule - Class representing a BGP-4 policy route-map rule
     $rule = new Net::ACL::RouteMapRule(
 	Action	=> ACL_PERMIT,
         Match	=> {
-		ASPath		=> [ $aspath_acl ],
-		Community	=> [ $com_acl ],
-		MED		=> [ 10, 20 ],
-		Prefix		=> [ $prefix_acl ],
-		Address		=> [ $ip1_acl ],
-		Next_hop	=> [ $ip2_acl ],
-		RouteSource	=> [ $ip3_acl ],
+		ASPath		=> [ 'my-as-path-list' ],
+		Community	=> [ 'my-community-list' ],
+		Prefix		=> [ 'my-prefix-list' ],
+		Next_hop	=> [ 'my-access-list' ],
+		MED		=> 20,
+		Local_Pref	=> 200,
 		Origin		=> IGP
 		},
 	Set	=> {
@@ -159,33 +224,93 @@ Net::ACL::RouteMapRule - Class representing a BGP-4 policy route-map rule
 		}
 	);
 
-    # Object Copy
-    $clone = $rule->clone();
-
     # Accessor Methods
-    ($rc,$nlri) = $rule->query($prefix, $nlri, $peer);
+    ($rc,$nlri) = $rule->query($prefix, $nlri);
+    $rc = $rule->match($prefix, $nlri);
 
 =head1 DESCRIPTION
 
 This module represent a single route-map clause with a match part, a set part
-and an action. This object is used by the Net::ACL::RouteMap object. It inherits
-from Net::ACL::Rule, with the only chenged method being the B<autoconstructor>
-method.
+and an action. This object is used by the
+L<Net::ACL::RouteMap|Net::ACL::RouteMap> object. It inherits from
+L<Net::ACL::Rule|Net::ACL::Rule>, with the only chenged method being the
+autoconstructor() method.
 
 =head1 CONSTRUCTOR
 
-I<new()> - create a new Net::ACL::RouteMapRule object
+=over 4
 
-Inherited from
+=item new() - create a new Net::ACL::RouteMapRule object
 
-I<query()>
+The method is inherited from the Net::ACL::Rule object. But since the
+autoconstruction() method has been replaced, some extra named arguments below
+Natch and Set are understod:
 
-##### FILL IN HERE ######
+=over 4
+
+=item ASPath
+
+When used in Match, the ASPath named argument should be a name of an ASPath
+access-lists.
+
+When used in Set, it should be the AS numbers that should be prepended. They
+may be specified in anyway that the Net::BGP:ASPath->new() constructor allows
+them.
+
+=item Community
+
+When used in Match, the Community named argument should be a community-list.
+
+When used in Set, it should be a list of communities to set.
+
+=item Prefix
+
+The Prefix named argument can only be used under Match. It's value should be
+a list of Net::ACL prefix-lists.
+
+=item Next_hop
+
+When used under Match, it's value should be a list of names of access-lists.
+
+When used under Set, it's value should be an IP address.
+
+=item Origin
+
+The Origin named arguement should have a value of either IGP, EGP or
+INCOMPLETE, as exported by Net::BGP::NLRI C<:origin>.
+
+=item Local_Pref
+
+=item MED
+
+=item Weight
+
+The Local_Pref, MED and Weight named argument should have values of integers.
+
+Weight can only be used in Set.
+
+=back
+
+=back
+
+=head1 ACCESSOR METHODS
+
+=over 4
+
+=item query()
+
+=item match()
+
+The query() and match() methods take a Net::BGP::NLRI object as first argument
+and a prefix as second, but does and return the same as the match() and query()
+methods of the Net::ACL::Rule object.
+
+=back
 
 =head1 SEE ALSO
 
-B<Net::ACL>, B<Net::ACL::Rule>, B<Net::ACL::RouteMap>,
-B<Net::BGP>, B<Net::BGP::NLRI>, B<Net::BGP::Router>
+Net::ACL, Net::ACL::Rule, Net::ACL::RouteMap,
+Net::BGP, Net::BGP::NLRI, Net::BGP::Router
 
 =head1 AUTHOR
 

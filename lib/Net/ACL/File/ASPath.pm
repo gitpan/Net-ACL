@@ -1,6 +1,6 @@
 #!/usr/bin/perl
 
-# $Id: ASPath.pm,v 1.4 2003/05/29 00:08:44 unimlo Exp $
+# $Id: ASPath.pm,v 1.8 2003/05/31 16:58:07 unimlo Exp $
 
 package Net::ACL::File::ASPathRule;
 
@@ -10,7 +10,7 @@ use vars qw( $VERSION @ISA );
 ## Inheritance ##
 
 @ISA     = qw( Net::ACL::Rule );
-$VERSION = '0.04';
+$VERSION = '0.05';
 
 ## Module Imports ##
 
@@ -25,6 +25,7 @@ sub asconfig
  my $name = shift;
  my $match = $this->{_match}->[0];
  my $str = $match->value;
+ $str =~ s/ /_/g;
  return 'ip as-path access-list ' . $name . ' ' . $this->action_str . ($str eq '' ? '' : ' ' . $str) . "\n";
 }
 
@@ -38,11 +39,11 @@ use vars qw( $VERSION @ISA );
 ## Inheritance ##
 
 @ISA     = qw( Net::ACL::File::Standard );
-$VERSION = '0.04';
+$VERSION = '0.05';
 
 ## Module Imports ##
 
-use Net::ACL::File;
+use Net::ACL::File::Standard;
 use Carp;
 
 ## Net::ACL::File Class Auto Registration Code ##
@@ -58,6 +59,7 @@ sub loadmatch
 	unless $line =~ /^ip as-path access-list ([^ ]+) (permit|deny)(.*)$/i;
  my ($name,$action,$data) = ($1,$2,$3);
  $data =~ s/^ //;
+ $data =~ s/_/ /g;
  my $rule = new Net::ACL::File::ASPathRule(
 	Action	=> $action
 	);
@@ -77,11 +79,11 @@ Net::ACL::File::ASPath - AS-path access-lists loaded from configuration string.
 =head1 DESCRIPTION
 
 This module extends the Net::ACL::File::Standard class to handle
-community-lists. See B<Net::ACL::File::Standard> for details.
+community-lists. See L<Net::ACL::File::Standard|Net::ACL::File::Standard> for details.
 
 =head1 SEE ALSO
 
-B<Net::ACL>, B<Net::ACL::File>, B<Net::ACL::Standard>
+Net::ACL, Net::ACL::File, Net::ACL::Standard
 
 =head1 AUTHOR
 

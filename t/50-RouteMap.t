@@ -1,10 +1,10 @@
 #!/usr/bin/perl -wT
 
-# $Id: 50-RouteMap.t,v 1.2 2003/05/27 23:41:57 unimlo Exp $
+# $Id: 50-RouteMap.t,v 1.4 2003/05/31 16:44:48 unimlo Exp $
 
 use strict;
 
-use Test::More tests => 20;
+use Test::More tests => 77;
 
 eval <<USES;
 use Net::BGP::NLRI;
@@ -15,8 +15,24 @@ my $hasbgp = $@ ? 0 : 1;
 
 # Use
 use_ok('Net::ACL');
+use_ok('Net::ACL::File');
+use_ok('Net::ACL::File::ASPath');
+use_ok('Net::ACL::File::Community');
+use_ok('Net::ACL::File::IPAccess');
+use_ok('Net::ACL::File::Prefix');
+use_ok('Net::ACL::RouteMapRule');
 use_ok('Net::ACL::RouteMapRule');
 use Net::ACL::Rule qw( :rc :action );
+
+# Helpers
+my $helpers = load Net::ACL::File(<<CONF);
+ip as-path access-list 1 permit ^65001
+ip as-path access-list 3 permit ^65001_65002
+ip community-list 2 permit 65001:50
+ip community-list 4 permit 65001:1 65001:2
+ip prefix-list 5 permit 10.20.30.0/24
+access-list 6 permit 10.0.0.2
+CONF
 
 # Construction
 my $permit = new Net::ACL::RouteMapRule(Action => ACL_PERMIT);
@@ -39,9 +55,9 @@ $change->action_str('pERMit');
 ok($change->action == ACL_PERMIT,         'Action modify string 2');
 
 my $aspath_comm = new Net::ACL::RouteMapRule(
-	Action	=> ACL_CONTINUE
+	Action	=> ACL_CONTINUE,
 	Match	=> {
-		ASPath		=> "^65001"
+		ASPath		=> [ 1 ]
 		},
 	Set	=> {
 		ASPath		=> "(65001 65002)",
@@ -49,6 +65,15 @@ my $aspath_comm = new Net::ACL::RouteMapRule(
 		}
 	);
 ok($aspath_comm->isa('Net::ACL::RouteMapRule'),'Complex construction 1');
+
+my $deny_comm = new Net::ACL::RouteMapRule(
+        Action  => ACL_DENY,
+	Match	=> {
+		Community	=> [ 2 ]
+		}
+	);
+ok($deny_comm->isa('Net::ACL::RouteMapRule'),'Complex construction 2');
+
 my $loc10to20 = new Net::ACL::RouteMapRule(
 	Action	=> ACL_PERMIT,
 	Match	=> {
@@ -58,15 +83,15 @@ my $loc10to20 = new Net::ACL::RouteMapRule(
 		LocalPref =>	20
 		}
 	);
-ok($loc10to20->isa('Net::ACL::RouteMapRule'),'Complex construction 2');
+ok($loc10to20->isa('Net::ACL::RouteMapRule'),'Complex construction 3');
 my $all = new Net::ACL::RouteMapRule(
 	Action	=> ACL_PERMIT,
 	Match	=> {
-		ASPath		=> [ qw(65001 65002) ],
-		Community	=> [ qw(65001:1 65001:2) ],
+		ASPath		=> [ 3 ],
+		Community	=> [ 4 ],
 		MED		=> 20,
-		Prefix		=> '127.0.0.0/8',
-		Nexthop		=> '10.0.0.2'
+		Prefix		=> [ 5 ],
+		Nexthop		=> [ 6 ]
 		},
 	Set	=> {
 		Prepend		=> 65010,
@@ -75,21 +100,102 @@ my $all = new Net::ACL::RouteMapRule(
 		Nexthop		=> '10.0.0.1'
 		}
 	);
-ok($all->isa('Net::ACL::RouteMapRule'),'Complex construction 3');
+ok($all->isa('Net::ACL::RouteMapRule'),'Complex construction 4');
 
-my $nlri;
-SKIP:
- {
-  skip('Net::BGP::NLRI not installed',4) unless $hasbgp;
-  $nlri = new Net::BGP::NLRI(LocalPref => 10);
-  ok($nlri->isa('Net::BGP::NLRI'),'NLRI Construction');
-  ok($nlri->local_pref == 10,'NLRI Data');
-  ok($permit->match($nlri) == ACL_MATCH,'Permit Match NLRI');
-  ok($deny->match($nlri)   == ACL_MATCH,'Deny Match NLRI');
- };
+my @rules = ($aspath_comm, $deny_comm, $loc10to20, $all);
+		
+SKIP: {
 
-my $permitlist = new Net::ACL(
-	Name => 'MyPermit',
-	Type => 'route-map'
+skip('Net::BGP::NLRI not installed',54) unless $hasbgp;
+
+my $nlri1 = new Net::BGP::NLRI(
+	ASPath => 65000,
+	Communities => [ '65001:1' ],
+	LocalPref => 15
 	);
+my $nlri2 = new Net::BGP::NLRI(
+	ASPath => 65001,
+	Communities => [ '65001:50' ],
+	LocalPref => 30
+	);
+my $nlri2a = new Net::BGP::NLRI(
+	ASPath => "(65001 65002) 65001",
+	Communities => [ qw(65001:50 65001:200 65001:300) ],
+	LocalPref => 30
+	);
+my $nlri3 = new Net::BGP::NLRI(
+        ASPath          => "65001 65002",
+	Communities	=> [ qw(65001:1 65001:2) ],
+        MED             => 20,
+        Nexthop         => '10.0.0.2',
+	LocalPref	=> 10
+	);
+my $nlri3a = new Net::BGP::NLRI(
+        ASPath          => "(65001 65002) 65001 65002",
+	Communities	=> [ qw(65001:1 65001:2 65001:200 65001:300) ],
+        MED             => 20,
+        Nexthop         => '10.0.0.2',
+	LocalPref	=> 10
+	);
+my $nlri3b = new Net::BGP::NLRI(
+        ASPath          => "65001 65002",
+	Communities	=> [ qw(65001:1 65001:2) ],
+        MED             => 20,
+        Nexthop         => '10.0.0.2',
+	LocalPref	=> 20
+	);
+my $nlri3c = new Net::BGP::NLRI(
+        ASPath          => "65010 65001 65002",
+	Communities	=> [ qw(65001:1 65001:2 65001:20) ],
+        MED             => 50,
+        Nexthop         => '10.0.0.1',
+	LocalPref	=> 10
+	);
+
+my @tests = (
+	[$nlri1,
+		[ACL_NOMATCH,ACL_CONTINUE,$nlri1],
+		[ACL_NOMATCH,ACL_CONTINUE,$nlri1],
+		[ACL_NOMATCH,ACL_CONTINUE,$nlri1],
+		[ACL_NOMATCH,ACL_CONTINUE,$nlri1]
+	],
+	[$nlri2,
+		[ACL_MATCH  ,ACL_CONTINUE,$nlri2a],
+		[ACL_MATCH  ,ACL_DENY    ,undef],
+		[ACL_NOMATCH,ACL_CONTINUE,$nlri2],
+		[ACL_NOMATCH,ACL_CONTINUE,$nlri2]
+	],
+	[$nlri3,
+		[ACL_MATCH  ,ACL_CONTINUE,$nlri3a],
+		[ACL_NOMATCH,ACL_CONTINUE,$nlri3],
+		[ACL_MATCH  ,ACL_PERMIT  ,$nlri3b],
+		[ACL_MATCH  ,ACL_PERMIT  ,$nlri3c]
+	]
+	);
+
+my $prefix = '10.20.30.0/24';
+
+my $tno = 0;
+foreach my $testpair (@tests)
+ {
+  my ($nlri,@subtests) = @{$testpair};
+  $tno++;
+  ok($nlri->isa('Net::BGP::NLRI'),"NLRI Construction $tno");
+  my $nlri2 = $all->_list2nlri($all->_nlri2list($nlri));
+  ok($nlri eq $nlri2,"NLRI to list and back $tno");
+  my $no = 0;
+  foreach my $test (@subtests)
+   {
+    my ($match,$query,$querynlri) = @{$test};
+    my $rule = $rules[$no++];
+    ok($rule->match($prefix,$nlri) == $match,"Match $tno - $no");
+    my ($rc,$newprefix,$newnlri) = $rule->query($prefix,$nlri);
+    ok($rc == $query,"Query RC $tno - $no");
+    ok((! defined $newnlri && ! defined $querynlri)
+      || ($newnlri eq $querynlri),"Query Data $tno - $no");
+    ok((! defined $querynlri)
+      || ($newprefix eq $prefix),"Query Prefix $tno - $no");
+   };
+ };
+}; # Skip-block
 

@@ -1,6 +1,6 @@
 #!/usr/bin/perl
 
-# $Id: Add.pm,v 1.5 2003/05/29 00:08:44 unimlo Exp $
+# $Id: Add.pm,v 1.7 2003/05/31 16:49:07 unimlo Exp $
 
 package Net::ACL::Set::Add;
 
@@ -10,7 +10,7 @@ use vars qw( $VERSION @ISA );
 ## Inheritance and Versioning ##
 
 @ISA     = qw( Net::ACL::Set::Scalar );
-$VERSION = '0.04';
+$VERSION = '0.05';
 
 ## Module Imports ##
 
@@ -23,7 +23,10 @@ sub set
 {
  my $this = shift;
  my @data = @_;
- $data[$this->{_index}] += $this->{_value};
+use Data::Dumper;
+ my $ax = $data[$this->{_index}];
+ # $data[$this->{_index}] += $this->{_value}; # Segfault in some ASPath stuff!
+ $data[$this->{_index}] = $data[$this->{_index}] + $this->{_value};
  return @data;
 }
 

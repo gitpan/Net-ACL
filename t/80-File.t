@@ -1,6 +1,6 @@
 #!/usr/bin/perl -wT
 
-# $Id: 80-File.t,v 1.8 2003/05/28 14:32:24 unimlo Exp $
+# $Id: 80-File.t,v 1.9 2003/05/31 16:44:48 unimlo Exp $
 
 use strict;
 
@@ -92,12 +92,12 @@ foreach my $pair (
 		[ACL_PERMIT,['ip','192.168.1.1','11.21.31.41']]
 		],
 	['community-list','1',
-		[ACL_PERMIT,['65001:1']],
-		[ACL_DENY,  ['65001:2']]
+		[ACL_PERMIT,[['65001:1']]],
+		[ACL_DENY,  [['65001:2']]]
 		],
 	['community-list','42',
-		[ACL_PERMIT,['65001:2']],
-		[ACL_DENY,  ['65001:1']]
+		[ACL_PERMIT,[['65001:2']]],
+		[ACL_DENY,  [['65001:1']]]
 		],
 	['as-path-list','1'],
 	['as-path-list','2'],

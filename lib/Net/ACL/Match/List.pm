@@ -1,6 +1,6 @@
 #!/usr/bin/perl
 
-# $Id: List.pm,v 1.9 2003/05/29 00:08:44 unimlo Exp $
+# $Id: List.pm,v 1.11 2003/05/31 16:49:07 unimlo Exp $
 
 package Net::ACL::Match::List;
 
@@ -10,7 +10,7 @@ use vars qw( $VERSION @ISA );
 ## Inheritance and Versioning ##
 
 @ISA     = qw( Net::ACL::Match );
-$VERSION = '0.04';
+$VERSION = '0.05';
 
 ## Module Imports ##
 
@@ -78,7 +78,7 @@ sub match
  my @data = @_;
  foreach my $list (@{$this->{_lists}})
   {
-   return ACL_NOMATCH unless $list->match(@data) == ACL_PERMIT;
+   return ACL_NOMATCH unless $list->match($data[$this->{_index}]) == ACL_PERMIT;
   }
  return ACL_MATCH;
 }

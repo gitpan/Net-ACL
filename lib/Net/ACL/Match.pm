@@ -1,6 +1,6 @@
 #!/usr/bin/perl
 
-# $Id: Match.pm,v 1.8 2003/05/29 00:08:44 unimlo Exp $
+# $Id: Match.pm,v 1.10 2003/05/31 16:58:07 unimlo Exp $
 
 package Net::ACL::Match;
 
@@ -10,7 +10,7 @@ use vars qw( $VERSION @ISA );
 ## Inheritance and Versioning ##
 
 @ISA     = qw( Exporter );
-$VERSION = '0.04';
+$VERSION = '0.05';
 
 ## Module Imports ##
 
@@ -118,7 +118,7 @@ Called with an argument, the argument is used as the new value.
 Net::ACL::Rule, Net::ACL,
 Net::ACL::Match::IP, Net::ACL::Match::Prefix,
 Net::ACL::Match::List, Net::ACL::Match::Scalar,
-Net::ACL::Match::Regexp
+Net::ACL::Match::Regexp, Net::ACL::Match::Member
 
 =head1 AUTHOR
 

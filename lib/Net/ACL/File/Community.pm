@@ -1,6 +1,6 @@
 #!/usr/bin/perl
 
-# $Id: Community.pm,v 1.5 2003/05/29 00:08:44 unimlo Exp $
+# $Id: Community.pm,v 1.9 2003/05/31 16:58:07 unimlo Exp $
 
 package Net::ACL::File::CommunityRule;
 
@@ -10,7 +10,7 @@ use vars qw( $VERSION @ISA );
 ## Inheritance ##
 
 @ISA     = qw( Net::ACL::Rule );
-$VERSION = '0.04';
+$VERSION = '0.05';
 
 ## Module Imports ##
 
@@ -24,7 +24,7 @@ sub asconfig
  my $this = shift;
  my $name = shift;
  my $match = $this->{_match}->[0];
- my $str = defined $match ? $match->value : '';
+ my $str = defined $match ? join(' ',@{$match->value}) : '';
  return 'ip community-list ' . $name . ' ' . $this->action_str . ($str eq '' ? '' : ' ' . $str) . "\n";
 }
 
@@ -38,11 +38,11 @@ use vars qw( $VERSION @ISA );
 ## Inheritance ##
 
 @ISA     = qw( Net::ACL::File::Standard );
-$VERSION = '0.04';
+$VERSION = '0.05';
 
 ## Module Imports ##
 
-use Net::ACL::File;
+use Net::ACL::File::Standard;
 use Carp;
 
 ## Net::ACL::File Class Auto Registration Code ##
@@ -61,7 +61,7 @@ sub loadmatch
  my $rule = new Net::ACL::File::CommunityRule(
 	Action	=> $action
 	);
- $rule->add_match($rule->autoconstruction('Match','Net::ACL::Match::Scalar','Scalar',0,$data))
+ $rule->add_match($rule->autoconstruction('Match','Net::ACL::Match::Member','Member',0,[split(/ /,$data)]))
  	unless $data eq '';
  $this->add_rule($rule);
  $this->name($name);
@@ -78,11 +78,12 @@ Net::ACL::File::Community - Community-lists loaded from configuration string.
 =head1 DESCRIPTION
 
 This module extends the Net::ACL::File::Standard class to handle
-community-lists. See B<Net::ACL::File::Standard> for details.
+community-lists. See L<Net::ACL::File::Standard|Net::ACL::File::Standard> for
+details.
 
 =head1 SEE ALSO
 
-B<Net::ACL>, B<Net::ACL::File>, B<Net::ACL::Standard>
+Net::ACL, Net::ACL::File, Net::ACL::Standard
 
 =head1 AUTHOR
 

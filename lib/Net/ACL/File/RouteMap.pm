@@ -1,6 +1,6 @@
 #!/usr/bin/perl
 
-# $Id: RouteMap.pm,v 1.11 2003/05/29 00:08:44 unimlo Exp $
+# $Id: RouteMap.pm,v 1.13 2003/05/31 16:49:07 unimlo Exp $
 
 package Net::ACL::File::RouteMapRule;
 
@@ -10,7 +10,7 @@ use vars qw( $VERSION @ISA );
 ## Inheritance ##
 
 @ISA     = qw( Net::ACL::RouteMapRule );
-$VERSION = '0.04';
+$VERSION = '0.05';
 
 ## Module Imports ##
 
@@ -37,7 +37,7 @@ sub asconfig
     {
      if ($match->isa('Net::ACL::Match::List'))
       {
-       $rules .= "\n match community-list " . $match->names;
+       $rules .= "\n match community " . join(' ',$match->names);
       }
      else
       {
@@ -108,7 +108,7 @@ use vars qw( $VERSION @ISA );
 ## Inheritance ##
 
 @ISA     = qw( Net::ACL::File::Standard );
-$VERSION = '0.04';
+$VERSION = '0.05';
 
 ## Module Imports ##
 

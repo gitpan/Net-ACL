@@ -1,6 +1,13 @@
-$Id: Changes,v 1.7 2003/05/29 00:14:00 unimlo Exp $
+$Id: Changes,v 1.8 2003/05/31 16:49:07 unimlo Exp $
 
 Revision history for Perl extension Net::ACL.
+
+0.05  Sat May 31
+	- updated more documentation
+	- added fatures for routemap/NLRI and tests of this
+	- added new Set and Match objects (Member and Union)
+	- changed Set::Add to use $x = $x + $y rather then $x += $y since the
+	  other resulted in seg-faults in some situations - STRANGE!
 
 0.04  Thu May 29
 	- updated more documentation

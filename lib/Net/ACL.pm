@@ -1,6 +1,6 @@
 #!/usr/bin/perl
 
-# $Id: ACL.pm,v 1.12 2003/05/29 00:08:44 unimlo Exp $
+# $Id: ACL.pm,v 1.14 2003/05/31 16:49:07 unimlo Exp $
 
 package Net::ACL;
 
@@ -10,7 +10,7 @@ use vars qw( $VERSION @ISA );
 ## Inheritance and Versioning ##
 
 @ISA     = qw( Exporter );
-$VERSION = '0.04';
+$VERSION = '0.05';
 
 ## Module Imports ##
 
@@ -26,14 +26,14 @@ my %knownlists;
 
 sub new
 {
- my $proto = shift;
+ my $proto = shift || __PACKAGE__;
  my $class = ref $proto || $proto;
 
- my $this = {
-        _name => undef,
-	_type => undef,
-	_rules => []
-  };
+ my $this = ref $proto ? $proto : bless( {}, $class );
+
+ $this->{_name} = undef;
+ $this->{_type} = undef;
+ $this->{_rules} = [];
 
  while ( defined(my $arg = shift) )
   {
@@ -71,8 +71,6 @@ sub new
      croak "Unrecognized argument $arg";
     };
   };
-
- bless($this, $class);
 
  croak 'Two access-lists with same (type,name) identification are not allowed!'
 	if defined $this->{_name} && defined $knownlists{$this->{_type} || $class}->{$this->{_name}};

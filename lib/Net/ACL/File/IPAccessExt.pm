@@ -1,6 +1,6 @@
 #!/usr/bin/perl
 
-# $Id: IPAccessExt.pm,v 1.7 2003/05/29 00:08:44 unimlo Exp $
+# $Id: IPAccessExt.pm,v 1.9 2003/05/31 16:58:07 unimlo Exp $
 
 package Net::ACL::File::IPAccessExtRule;
 
@@ -10,7 +10,7 @@ use vars qw( $VERSION @ISA );
 ## Inheritance ##
 
 @ISA     = qw( Net::ACL::IPAccessExtRule );
-$VERSION = '0.04';
+$VERSION = '0.05';
 
 ## Module Imports ##
 
@@ -65,7 +65,7 @@ use vars qw( $VERSION @ISA );
 ## Inheritance ##
 
 @ISA     = qw( Net::ACL::File::Standard );
-$VERSION = '0.04';
+$VERSION = '0.05';
 
 ## Module Imports ##
 
@@ -143,11 +143,12 @@ Net::ACL::File::IPAccessExt - Extended IP access-lists loaded from configuration
 =head1 DESCRIPTION
 
 This module extends the Net::ACL::File::Standard class to handle
-community-lists. See B<Net::ACL::File::Standard> for details.
+community-lists. See L<Net::ACL::File::Standard|Net::ACL::File::Standard> for
+details.
 
 =head1 SEE ALSO
 
-B<Net::ACL>, B<Net::ACL::File>, B<Net::ACL::Standard>, B<Net::ACL::IPAccessExtRule>
+Net::ACL, Net::ACL::File, Net::ACL::Standard, Net::ACL::IPAccessExtRule
 
 =head1 AUTHOR
 

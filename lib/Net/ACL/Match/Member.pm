@@ -1,55 +1,42 @@
 #!/usr/bin/perl
 
-# $Id: Scalar.pm,v 1.8 2003/05/31 16:49:07 unimlo Exp $
+# $Id: Member.pm,v 1.2 2003/05/31 16:49:07 unimlo Exp $
 
-package Net::ACL::Match::Scalar;
+package Net::ACL::Match::Member;
 
 use strict;
 use vars qw( $VERSION @ISA );
 
 ## Inheritance and Versioning ##
 
-@ISA     = qw( Net::ACL::Match );
+@ISA     = qw( Net::ACL::Match::Scalar );
 $VERSION = '0.05';
 
 ## Module Imports ##
 
-use Net::ACL::Match;
+use Net::ACL::Match::Scalar;
 use Net::ACL::Rule qw( :rc );
 use Carp;
-
-## Public Class Methods ##
-
-sub new
-{
- my $proto = shift;
- my $class = ref $proto || $proto;
- @_ = @{$_[0]} if (scalar @_ == 1) && (ref $_[0] eq 'ARRAY');
-
- my $this = {
-	_index => shift,
-	_value => shift
-	};
-
- croak "Index need to be a number\n" unless defined $this->{_index} && $this->{_index} =~ /^[0-9]+$/;
-
- bless($this,$class);
- return $this;
-}
 
 ## Public Object Methods ##
 
 sub match
 {
  my $this = shift;
- return $_[$this->{_index}] eq $this->{_value} ? ACL_MATCH : ACL_NOMATCH;
-}
-
-sub value
-{
- my $this = shift;
- $this->{_value} = @_ ? shift : $this->{_value};
- return $this->{_value};
+ my @data = @_;
+ my $data = $data[$this->{_index}];
+ croak __PACKAGE__ . "->match needs to operate on an array reference!"
+        unless ref $data eq 'ARRAY';
+ my %miss;
+ foreach my $elem ( @{$this->{_value}} )
+  {
+   $miss{$elem} = 1;
+  };
+ foreach my $elem ( @{$data} )
+  {
+   delete $miss{$elem};
+  };
+ return scalar (keys %miss) ? ACL_NOMATCH : ACL_MATCH;
 }
 
 ## POD ##
@@ -58,17 +45,17 @@ sub value
 
 =head1 NAME
 
-Net::ACL::Match::Scalar - Class matching a scalar data element
+Net::ACL::Match::Member - Class matching one or more members of an array
 
 =head1 SYNOPSIS
 
-    use Net::ACL::Match::Scalar;
+    use Net::ACL::Match::Member;
 
     # Construction
-    my $match = new Net::ACL::Match::Scalar([42,1]);
+    my $match = new Net::ACL::Match::Member(1,[41,42]);
 
     # Accessor Methods
-    $rc = $match->match(@data); # same as: $data[1] eq 42 ? ACL_MATCH : ACL_NOMATCH;
+    $rc = $match->match(@data);
 
 =head1 DESCRIPTION
 
@@ -79,9 +66,9 @@ simple value matching with L<Net::ACL::Rule|Net::ACL::Rule>.
 
 =over 4
 
-=item new() - create a new Net::ACL::Match::Scalar object 
+=item new() - create a new Net::ACL::Match::Member object 
 
-    my $match = new Net::ACL::Match::Scalar(42,1);
+    my $match = new Net::ACL::Match::Member(1,[41,42]);
 
 This is the constructor for Net::ACL::Match::Scalar objects.
 It returns a reference to the newly created object.
@@ -111,7 +98,7 @@ Net::ACL::Rule with C<:rc>.
 
 =head1 SEE ALSO
 
-Net::ACL::Match, Net::ACL::Rule, Net::ACL, Net::ACL::Set::Scalar
+Net::ACL::Match, Net::ACL::Rule, Net::ACL, Net::ACL::Set::Union
 
 =head1 AUTHOR
 
@@ -119,6 +106,6 @@ Martin Lorensen <bgp@martin.lorensen.dk>
 
 =cut
 
-## End Package Net::ACL::Match::Scalar ##
+## End Package Net::ACL::Match::Member ##
  
 1;

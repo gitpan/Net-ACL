@@ -1,6 +1,6 @@
 #!/usr/bin/perl
 
-# $Id: Rule.pm,v 1.13 2003/05/29 00:08:44 unimlo Exp $
+# $Id: Rule.pm,v 1.16 2003/05/31 16:58:07 unimlo Exp $
 
 package Net::ACL::Rule;
 
@@ -13,7 +13,7 @@ use vars qw(
 ## Inheritance and Versioning ##
 
 @ISA     = qw( Exporter );
-$VERSION = '0.04';
+$VERSION = '0.05';
 
 ## Module Imports ##
 
@@ -135,11 +135,7 @@ sub action_str
 sub match
 {
  my $this = shift;
- foreach my $subrule (@{$this->{_match}})
-  {
-   return ACL_NOMATCH unless $subrule->match(@_);
-  };
- return ACL_MATCH;
+ return $this->_match(@_); # To allow replacement of match which doesn't effect query()
 }
 
 sub set
@@ -155,7 +151,7 @@ sub set
 sub query
 {
  my $this = shift;
- return (ACL_CONTINUE,@_) unless $this->match(@_);
+ return (ACL_CONTINUE,@_) unless $this->_match(@_);
  return ($this->{_action},($this->{_action} == ACL_DENY) ? undef : $this->set(@_));
 }
 
@@ -195,6 +191,16 @@ sub autoconstruction
 }
 
 ## Private Object Methods ##
+
+sub _match
+{
+ my $this = shift;
+ foreach my $subrule (@{$this->{_match}})
+  {
+   return ACL_NOMATCH unless $subrule->match(@_);
+  };
+ return ACL_MATCH;
+}
 
 sub _add
 {
@@ -338,7 +344,7 @@ rule-set.
 
 =item Set
 
-The set parameter are in syntaks just like the B<Match> parameter, except
+The set parameter are in syntaks just like the C<Match> parameter, except
 it uses Net::ACL::Set objects.
 
 =back
@@ -387,7 +393,7 @@ match or set rule object. New rules are added in the end of the ruleset.
 =item match()
 
 The match method get any abitrary number of arguments. The arguments are passed
-to the B<match> method of each of the Net::ACL::Match objects,
+to the match() method of each of the Net::ACL::Match objects,
 given at construction time - see new(). If all Match objects did
 match, the method returns ACL_MATCH. Otherwise ACL_MATCH.
 
@@ -404,7 +410,7 @@ Finaly the result of the last call is returned.
 The query method first attempt to match it's arguments with the match()
 method. If this failes, it returns ACL_CONTINUE. Otherwise it uses
 the set() method to potentialy alter the arguments before they are returned
-with B<Action> given on construction prefixed.
+with C<Action> given on construction prefixed.
 
 =item autoconstruction()
 

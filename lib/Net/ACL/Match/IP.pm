@@ -1,6 +1,6 @@
 #!/usr/bin/perl
 
-# $Id: IP.pm,v 1.10 2003/05/29 00:08:44 unimlo Exp $
+# $Id: IP.pm,v 1.12 2003/05/31 16:58:07 unimlo Exp $
 
 package Net::ACL::Match::IP;
 
@@ -10,7 +10,7 @@ use vars qw( $VERSION @ISA );
 ## Inheritance and Versioning ##
 
 @ISA     = qw( Net::ACL::Match );
-$VERSION = '0.04';
+$VERSION = '0.05';
 
 ## Module Imports ##
 
@@ -84,7 +84,7 @@ Net::ACL::Match::IP - Class matching IP addresses against an IP or network
 =head1 DESCRIPTION
 
 This module is just a wrapper of the Net::Netmask module to allow it to
-operate automaticly with B<Net::ACL::Rule>.
+operate automaticly with L<Net::ACL::Rule|Net::ACL::Rule>.
 
 =head1 CONSTRUCTOR
 
@@ -95,13 +95,13 @@ I<new()> - create a new Net::ACL::Match::IP object
 This is the constructor for Net::ACL::Match::IP objects. It returns a
 reference to the newly created object. The first argument is the argument
 number of the match method that should be matched. The remaining arguments
-is parsed directly to the constructor of B<Net::Netmask>.
+is parsed directly to the constructor of Net::Netmask.
 
 =head1 ACCESSOR METHODS
 
 I<net()>
 
-The net method returns the B<Net::Netmask> object representing the network
+The net method returns the Net::Netmask object representing the network
 matched. If called with a Net::Netmask object, the net used for matching is
 changed to that object. If called with a anything else, the Net::Netmask
 constructor will be used to convert it to a Net::Netmask object.
@@ -113,13 +113,13 @@ If called with an argument, the index is changed to that argument.
 
 I<match()>
 
-The match method invoke the B<match> method of the Net::Netmask object constructed
-by B<new>. The index value defines which argument is passed on to B<new>.
+The match method invoke the match() method of the Net::Netmask object constructed
+by new(). The index value defines which argument is passed on to new().
 
 =head1 SEE ALSO
 
-B<Net::Netmask>, B<Net::ACL>,
-B<Net::ACL::Rule>, B<Net::ACL::Match>
+Net::Netmask, Net::ACL,
+Net::ACL::Rule, Net::ACL::Match
 
 =head1 AUTHOR
 

@@ -1,6 +1,6 @@
 #!/usr/bin/perl
 
-# $Id: Set.pm,v 1.6 2003/05/29 00:08:44 unimlo Exp $
+# $Id: Set.pm,v 1.8 2003/05/31 16:58:07 unimlo Exp $
 
 package Net::ACL::Set;
 
@@ -11,7 +11,7 @@ use vars qw( $VERSION @ISA );
 ## Inheritance and Versioning ##
 
 @ISA     = qw( Exporter );
-$VERSION = '0.04';
+$VERSION = '0.05';
 
 ## Module Imports ##
 
@@ -75,13 +75,17 @@ Net::ACL::Set - Abstract parent class of Set-classes
 
 =head1 DESCRIPTION
 
-This is an abstract parent class for all B<Net::ACL::Set*>
-classes. It is used by the B<Net::ACL::Rule> object.
+This is an abstract parent class for all Net::ACL::Set*
+classes. It is used by the Net::ACL::Rule object.
 
-It only has a constructor B<new> and a method B<set>. Both should be
+It only has a constructor new() and a method set(). Both should be
 replaced in any ancestor object.
 
 =head1 CONSTRUCTOR
+
+=over 4
+
+=item 4 new() - Constructor of Net::ACL::Set* objects
 
     my $set = new Net::ACL::SetMyPackage($args);
 
@@ -89,17 +93,23 @@ This is the constructor for Net::ACL::Set::* objects.
 It returns a reference to the newly created object.
 It takes one argument which should describe what to set.
 
+=back
+
 =head1 ACCESSOR METHODS
 
-I<set()>
+=over 4
+
+=item set()
 
 This function should modify the data given as arguments (one or more) with
 the data passed to the constructor and return the modifyed data.
 
+=back
+
 =head1 SEE ALSO
 
-B<Net::ACL::Rule>, B<Net::ACL>,
-B<Net::ACL::Set::Scalar>
+Net::ACL::Rule, Net::ACL,
+Net::ACL::Set::Scalar, Net::ACL::Set::Union, Net::ACL::Set::Add
 
 =head1 AUTHOR
 

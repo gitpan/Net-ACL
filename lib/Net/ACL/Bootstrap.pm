@@ -1,6 +1,6 @@
 #!/usr/bin/perl
 
-# $Id: Bootstrap.pm,v 1.9 2003/05/29 00:08:44 unimlo Exp $
+# $Id: Bootstrap.pm,v 1.11 2003/05/31 16:49:07 unimlo Exp $
 
 package Net::ACL::Bootstrap;
 
@@ -10,7 +10,7 @@ use vars qw( $VERSION @ISA $AUTOLOAD );
 ## Inheritance and Versioning ##
 
 @ISA     = qw( Exporter );
-$VERSION = '0.04';
+$VERSION = '0.05';
 
 ## Module Imports ##
 
@@ -77,7 +77,9 @@ sub AUTOLOAD
  my $class = ref $this || $this;
  $method =~ s/${class}:://;
  $this->fetch unless defined $this->{_reallist};
- croak "Match with non-existing access-list!\n" unless defined $this->{_reallist};
+ croak 'Operation on non-existing Net::ACL (' .
+	($this->type || '(type n/a)') . ' ' . ($this->name || '(name n/a)') . ")!\n"
+	unless defined $this->{_reallist};
  $this->{_reallist}->$method(@_);
 }
 

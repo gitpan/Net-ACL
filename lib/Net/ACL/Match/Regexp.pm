@@ -1,6 +1,6 @@
 #!/usr/bin/perl
 
-# $Id: Regexp.pm,v 1.4 2003/05/29 00:08:44 unimlo Exp $
+# $Id: Regexp.pm,v 1.7 2003/05/31 16:58:07 unimlo Exp $
 
 package Net::ACL::Match::Regexp;
 
@@ -10,7 +10,7 @@ use vars qw( $VERSION @ISA );
 ## Inheritance and Versioning ##
 
 @ISA     = qw( Net::ACL::Match::Scalar );
-$VERSION = '0.04';
+$VERSION = '0.05';
 
 ## Module Imports ##
 
@@ -24,7 +24,8 @@ sub match
 {
  my $this = shift;
  my $pattern = $this->{_value};
- return $_[$this->{_index}] =~ /$pattern/ ? ACL_MATCH : ACL_NOMATCH;
+ my $data = $_[$this->{_index}];
+ return $data =~ /$pattern/ ? ACL_MATCH : ACL_NOMATCH;
 }
 
 ## POD ##
@@ -48,7 +49,7 @@ Net::ACL::Match::Regexp - Class matching a scalar data element
 =head1 DESCRIPTION
 
 This module is a very simpel array element testing with regular expresion
-utility to allow simple value matching with B<Net::ACL::Rule>.
+utility to allow simple value matching with L<Net::ACL::Rule|Net::ACL::Rule>.
 
 =head1 CONSTRUCTOR
 
@@ -73,11 +74,11 @@ I<match()>
 
 This function matches the arguments acording to the arguments of the
 constructor and returns either ACL_MATCH or ACL_NOMATCH as exported by
-B<NEt::ACL::Rule> with B<:rc>.
+Net::ACL::Rule with C<:rc>.
 
 =head1 SEE ALSO
 
-B<Net::ACL::Match>, B<Net::ACL::Rule>, B<Net::ACL>
+Net::ACL::Match, Net::ACL::Rule, Net::ACL
 
 =head1 AUTHOR
 
