@@ -1,6 +1,6 @@
 #!/usr/bin/perl
 
-# $Id: Bootstrap.pm,v 1.4 2003/05/27 23:41:50 unimlo Exp $
+# $Id: Bootstrap.pm,v 1.7 2003/05/28 14:38:59 unimlo Exp $
 
 package Net::ACL::Bootstrap;
 
@@ -10,7 +10,7 @@ use vars qw( $VERSION @ISA $AUTOLOAD );
 ## Inheritance and Versioning ##
 
 @ISA     = qw( Exporter );
-$VERSION = '0.02';
+$VERSION = '0.03';
 
 ## Module Imports ##
 
@@ -52,13 +52,32 @@ sub renew
  return $this;
 }
 
+sub name
+{
+ my $this = shift;
+ $this->fetch unless defined $this->{_reallist};
+ return $this->{_reallist}->name(@_) if defined $this->{_reallist};
+ # Modification is too odd!
+ return $this->{_name};
+}
+
+sub type
+{
+ my $this = shift;
+ $this->fetch unless defined $this->{_reallist};
+ return $this->{_reallist}->type(@_) if defined $this->{_reallist};
+ # Modification is too odd!
+ return $this->{_type};
+}
+
 sub AUTOLOAD
 {
  my $method = $AUTOLOAD;
  my $this = shift;
  my $class = ref $this || $this;
  $method =~ s/${class}:://;
- $this->fetch unless (defined $this->{_reallist});
+ $this->fetch unless defined $this->{_reallist};
+ croak "Match with non-existing access-list!\n" unless defined $this->{_reallist};
  $this->{_reallist}->$method(@_);
 }
 
@@ -73,7 +92,6 @@ sub fetch
 	Name	=> $this->{_name},
 	Type	=> $this->{_type}
 	);
- croak "Match with non-existing access-list!" unless defined $this->{_reallist};
 }
 
 ## POD ##
@@ -82,7 +100,7 @@ sub fetch
 
 =head1 NAME
 
-Net::ACL::Bootstrap - A proxy/bootstrapper class for the Net::ACL class
+Net::ACL::Bootstrap - A proxy/bootstrapper class for the L<Net::ACL|Net::ACL> class
 
 =head1 SYNOPSIS
 
@@ -99,12 +117,14 @@ Net::ACL::Bootstrap - A proxy/bootstrapper class for the Net::ACL class
 This module works as a wrapper/proxy/bootstrapper for the Net::ACL class.
 
 It makes it possible to B<renew> a list thats has not yet been constructed
-using its name and type. The list should be constructed before any method
-is used on this object.
+using its name and type. The real list should be constructed before any
+method is used on this object (except name(), type() and fetch()).
 
 =head1 CONSTRUCTOR
 
-I<renew()> - create a new Net::ACL::Bootstrap object:
+=over 4
+
+=item renew() - create a new Net::ACL::Bootstrap object:
 
     $list = renew Net::ACL(
         Name    => 'MyACL',
@@ -112,20 +132,34 @@ I<renew()> - create a new Net::ACL::Bootstrap object:
         );
 
 This is the only constructor for Net::ACL::Bootstrap class.  The arguments
-are the same as the B<renew> constructor of the B<Net::ACL> class.
+are the same as the B<renew> constructor of the Net::ACL class.
 
 It either returns an existing Net::ACL object matching the arguments or a
 reference to the newly created Net::ACL::Bootstrap object.
 
+=back
+
 =head1 ACCESSOR METHODS
 
-I<fetch()>
+=over 4
+
+=item fetch()
 
 Forces the class to load the reference to the list or croak if that fails.
 
-I<AUTOLOAD()>
+=item name()
+
+=item type()
+
+It is possible to query name and type data of the list, however, not to
+change them, unless the list is loaded. But only if the list can be loaded,
+change the name or type can be done.
+
+=item AUTOLOAD()
 
 All other methods are proxyed to the real Net::ACL object.
+
+=back
 
 =head1 SEE ALSO
 

@@ -1,6 +1,6 @@
 #!/usr/bin/perl
 
-# $Id: IP.pm,v 1.7 2003/05/27 22:42:07 unimlo Exp $
+# $Id: IP.pm,v 1.9 2003/05/28 14:38:59 unimlo Exp $
 
 package Net::ACL::Match::IP;
 
@@ -10,7 +10,7 @@ use vars qw( $VERSION @ISA );
 ## Inheritance and Versioning ##
 
 @ISA     = qw( Net::ACL::Match );
-$VERSION = '0.02';
+$VERSION = '0.03';
 
 ## Module Imports ##
 
@@ -74,7 +74,7 @@ Net::ACL::Match::IP - Class matching IP addresses against an IP or network
 
     # Constructor
     $match = new Net::ACL::Match::IP(1,'10.0.0.0/8');
-		
+
     # Accessor Methods
     $netmaskobj = $match->net($netmaskobj);
     $netmaskobj = $match->net($net);

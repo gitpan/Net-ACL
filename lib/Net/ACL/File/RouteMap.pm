@@ -1,6 +1,6 @@
 #!/usr/bin/perl
 
-# $Id: RouteMap.pm,v 1.8 2003/05/27 23:41:52 unimlo Exp $
+# $Id: RouteMap.pm,v 1.10 2003/05/28 14:38:59 unimlo Exp $
 
 package Net::ACL::File::RouteMapRule;
 
@@ -10,7 +10,7 @@ use vars qw( $VERSION @ISA );
 ## Inheritance ##
 
 @ISA     = qw( Net::ACL::RouteMapRule );
-$VERSION = '0.02';
+$VERSION = '0.03';
 
 ## Module Imports ##
 
@@ -31,18 +31,31 @@ sub asconfig
 #use Data::Dumper; warn Dumper($match);
    if ($match->index == ACL_ROUTEMAP_ASPATH)
     {
-     $rules .= "\n match as-path " . $match->value;
+     $rules .= "\n match as-path " . join(' ',$match->names);
     }
    elsif ($match->index == ACL_ROUTEMAP_COMMUNITY)
     {
+     if ($match->isa('Net::ACL::Match::List'))
+      {
+       $rules .= "\n match community-list " . $match->names;
+      }
+     else
+      {
+       $rules .= "\n match community " . $match->value;
+      };
     }
    elsif ($match->index == ACL_ROUTEMAP_PREFIX)
     {
-     $rules .= "\n match ip address prefix-list " . join(' ',$match->names);
+     my $type = $match->type eq 'prefix-list' ? 'prefix-list ' : '';
+     $rules .= "\n match ip address $type" . join(' ',$match->names);
     }
    elsif ($match->index == ACL_ROUTEMAP_NEXTHOP)
     {
      $rules .= "\n match ip next-hop prefix-list " . join(' ',$match->names);
+    }
+   elsif ($match->index == ACL_ROUTEMAP_MED)
+    {
+     $rules .= "\n match metric " . $match->value;
     }
    else
     {
@@ -62,8 +75,15 @@ sub asconfig
     {
      $rules .= "\n set community " . $set->value;
     }
-   elsif ($set->index == ACL_ROUTEMAP_PREFIX)
+   elsif ($set->index == ACL_ROUTEMAP_MED)
     {
+     $rules .= "\n set metric " . 
+	($set->isa('Net::ACL::Set::Add') ? ($set->value < 0 ? '' : '+') : '') .
+	$set->value;
+    }
+   elsif ($set->index == ACL_ROUTEMAP_LOCALPREF)
+    {
+     $rules .= "\n set local-preference " . $set->value;
     }
    else
     {
@@ -71,9 +91,11 @@ sub asconfig
     }
   }
 
+ my $seq = $this->seq;
+ $seq = defined $seq ? " $seq" : '';
  
  # Put it all together and return!
- return "route-map $name " . $this->action_str . $rules . "\n";
+ return "route-map $name " . $this->action_str . $seq . $rules . "\n";
 }
 
 ## End of Net::ACL::File::RouteMapRule ##
@@ -86,7 +108,7 @@ use vars qw( $VERSION @ISA );
 ## Inheritance ##
 
 @ISA     = qw( Net::ACL::File::Standard );
-$VERSION = '0.02';
+$VERSION = '0.03';
 
 ## Module Imports ##
 
@@ -104,15 +126,15 @@ sub loadmatch
 {
  my ($this,$block,$super) = @_;
 
+ #$z+=1; warn "RULE1($z): $block";
  $block = $super unless $block =~ /route-map/;
-
- #$z+=1; warn "RULE($z): $block";
+ #warn "RULE2($z): $block";
 
  # Get name and action!
  croak "Configuration header line format error in line: '$block'"
-	unless $block =~ /route-map ([^ ]+) (permit|deny)/;
+	unless $block =~ /route-map ([^ ]+) (permit|deny) ?([\d]*)$/;
  $this->name($1);
- my %arg = ( Action => $2 );
+ my %arg = ( Action => $2, Seq => $3 );
 
  my $ii = 0;
  foreach my $entry1 ($block->subs->get)

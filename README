@@ -1,4 +1,4 @@
-$Id: README,v 1.6 2003/05/27 23:41:37 unimlo Exp $
+$Id: README,v 1.7 2003/05/28 14:31:55 unimlo Exp $
 
 **** NOTE: This is pre-alpha code!!!
 ****	- Interface is not final yet!
@@ -6,7 +6,7 @@ $Id: README,v 1.6 2003/05/27 23:41:37 unimlo Exp $
 ****    - BGP integration not yet complete!
 ****	- Net::Netmask module required for this module to work not yet released!
 
-Net::ACL version 0.02
+Net::ACL version 0.03
 =====================
 
 The Net::ACL module allows a Perl program to do complex filtering and

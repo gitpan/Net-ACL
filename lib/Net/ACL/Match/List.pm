@@ -1,6 +1,6 @@
 #!/usr/bin/perl
 
-# $Id: List.pm,v 1.6 2003/05/27 23:41:53 unimlo Exp $
+# $Id: List.pm,v 1.8 2003/05/28 14:32:24 unimlo Exp $
 
 package Net::ACL::Match::List;
 
@@ -10,7 +10,7 @@ use vars qw( $VERSION @ISA );
 ## Inheritance and Versioning ##
 
 @ISA     = qw( Net::ACL::Match );
-$VERSION = '0.02';
+$VERSION = '0.03';
 
 ## Module Imports ##
 
@@ -83,6 +83,13 @@ sub match
  return ACL_MATCH;
 }
 
+sub type
+{
+ my $this = shift;
+ return unless scalar @{$this->{_lists}};
+ return $this->{_lists}->[0]->type;
+}
+
 sub names
 {
  my $this = shift;
@@ -106,7 +113,7 @@ Net::ACL::Match::List - Class matching data against one or more access-lists
 	Type	=> 'prefix-list'
 	Name	=> 42
 	] );
-		
+
     # Accessor Methods
     $rc = $match->match('127.0.0.0/20');
 
@@ -117,7 +124,9 @@ data if data is permited by all access-lists.
 
 =head1 CONSTRUCTOR
 
-I<new()> - create a new Net::ACL::Match::List object
+=over 4
+
+=item new() - create a new Net::ACL::Match::List object
 
     $match = new Net::ACL::Match::List(2, [
 	Type	=> 'prefix-list'
@@ -130,27 +139,53 @@ argument is the index of the element that should be matched.
 
 The second argument can have one of the following types:
 
-I<Net::ACL> - An access-list to be matched against.
+=over 4
 
-I<HASH reference> - A reference to a hash passed to Net::ACL->renew
+=item Net::ACL
 
-I<SCALAR> - A scalar passed to Net::ACL->renew
+An access-list to be matched against.
 
-I<ARRAY reference> - A reference to an array one of the abover 3 types. Used
+=item HASH reference
+
+A reference to a hash passed to Net::ACL->renew
+
+=item SCALAR
+
+A scalar passed to Net::ACL->renew
+
+=item ARRAY reference
+
+A reference to an array one of the abover 3 types. Used
 to match multiple lists.
 
+=back
+
+=back
 
 =head1 ACCESSOR METHODS
 
-I<match()>
+=over 4
+
+=item match()
 
 The match method verifies if the data is permitted by all access-lists
 supplied to the constructor. Returns ACL_MATCH if it does, otherwise
 ACL_NOMATCH.
 
+=item names()
+
+Return a list with all mached lists names.
+
+=item type()
+
+Returns the type of the first list thats matched - or undef if no lists are
+matched.
+
+=back
+
 =head1 SEE ALSO
 
-B<Net::ACL::Match>, B<Net::ACL::Rule>, B<Net::ACL>
+Net::ACL::Match, Net::ACL::Rule, Net::ACL
 
 =head1 AUTHOR
 

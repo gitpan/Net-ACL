@@ -1,6 +1,6 @@
 #!/usr/bin/perl
 
-# $Id: IPAccessExt.pm,v 1.3 2003/05/27 22:42:05 unimlo Exp $
+# $Id: IPAccessExt.pm,v 1.6 2003/05/28 14:38:59 unimlo Exp $
 
 package Net::ACL::File::IPAccessExtRule;
 
@@ -10,7 +10,7 @@ use vars qw( $VERSION @ISA );
 ## Inheritance ##
 
 @ISA     = qw( Net::ACL::IPAccessExtRule );
-$VERSION = '0.02';
+$VERSION = '0.03';
 
 ## Module Imports ##
 
@@ -31,16 +31,28 @@ sub asconfig
     }
    elsif ($match->index == ACL_EIA_FROM)
     {
-     my $net = $match->net;
-     $from = defined $net ? $net->base . ' ' . $net->hostmask : '';
+     $from = $this->_getaddr($match->net);
     }
    elsif ($match->index == ACL_EIA_TO)
     {
-     my $net = $match->net;
-     $to = defined $net ? $net->base . ' ' . $net->hostmask : '';
+     $to = $this->_getaddr($match->net);
     };
   };
  return ' ' . $this->action_str . " $proto $from $to\n";
+}
+
+## Private object methods ##
+
+sub _getaddr
+{
+ my ($this,$net) = @_;
+ return defined $net
+	? ($net->bits == 32
+		? 'host ' . $net->base
+		: ($net->bits == 0
+			? 'any'
+			: $net->base . ' ' . $net->hostmask))
+	: '';
 }
 
 ## End of Net::ACL::File::IPAccessExtRule ##
@@ -53,7 +65,7 @@ use vars qw( $VERSION @ISA );
 ## Inheritance ##
 
 @ISA     = qw( Net::ACL::File::Standard );
-$VERSION = '0.02';
+$VERSION = '0.03';
 
 ## Module Imports ##
 
@@ -69,36 +81,55 @@ Net::ACL::File->add_listtype('extended-access-list',__PACKAGE__,'ip access-list 
 
 sub loadmatch
 {
- my ($this,$line,$super) = @_;
+ my ($this,$lines,$super) = @_;
 
- $line =~ s/ +/ /g;
- croak "Configuration line format error in line: '$line'"
+ $lines = $lines->subs ? $lines->subs : $lines;
+
+ foreach my $line ($lines =~ /\n./ ? $lines->all : $lines)
+  {
+   $line =~ s/ +/ /g;
+   croak "Configuration line format error in line: '$line'"
 	unless $line =~ /^ (permit|deny) ([^ ]+) (.*)$/i;
- my ($action,$proto,$data) = ($1,$2,$3);
- $data =~ s/^ //;
- my @data = split(/ /,$data);
- my $from = shift(@data);
- $from .= ' ' . shift(@data) unless ($from eq 'any');
- my $to = shift(@data);
- $to .= ' ' . shift(@data) unless ($to eq 'any');
- $to =~ s/ /#/;
- $from =~ s/ /#/;
- my $rule = new Net::ACL::File::IPAccessExtRule(
+   my ($action,$proto,$data) = ($1,$2,$3);
+   $data =~ s/^ //;
+   my @data = split(/ /,$data);
+   my $from = shift(@data);
+   if ($from eq 'host')
+    {
+     $from = shift(@data);
+    }
+   else
+    {
+     $from .= ' ' . shift(@data) unless ($from eq 'any');
+    };
+   my $to = shift(@data);
+   if ($to eq 'host')
+    {
+     $to = shift(@data);
+    }
+   else
+    {
+     $to .= ' ' . shift(@data) unless ($to eq 'any');
+    };
+   $to =~ s/ /#/;
+   $from =~ s/ /#/;
+   my $rule = new Net::ACL::File::IPAccessExtRule(
 	Action	=> $action
 	);
- $rule->add_match($rule->autoconstruction('Match','Net::ACL::Match::Scalar','Scalar',ACL_EIA_PROTO,$proto));
- $rule->add_match($rule->autoconstruction('Match','Net::ACL::Match::IP','IP',ACL_EIA_FROM,$from));
- $rule->add_match($rule->autoconstruction('Match','Net::ACL::Match::IP','IP',ACL_EIA_TO,$to));
- $this->add_rule($rule);
- $this->name($1)
+   $rule->add_match($rule->autoconstruction('Match','Net::ACL::Match::Scalar','Scalar',ACL_EIA_PROTO,$proto));
+   $rule->add_match($rule->autoconstruction('Match','Net::ACL::Match::IP','IP',ACL_EIA_FROM,$from));
+   $rule->add_match($rule->autoconstruction('Match','Net::ACL::Match::IP','IP',ACL_EIA_TO,$to));
+   $this->add_rule($rule);
+   $this->name($1)
 	if ! defined($this->name)
 	 && $super =~ /ip access-list extended (.*)$/;
+  }
 }
 
 sub asconfig
 {
  my $this = shift;
- return "ip access-list extended " . $this->name . "\n" . $this->SUPER::asconfig(@_);
+ return "ip access-list extended " . $this->name . "\n" . $this->SUPER::asconfig(@_) . "!\n";
 }
 
 ## POD ##

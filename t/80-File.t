@@ -1,6 +1,6 @@
 #!/usr/bin/perl -wT
 
-# $Id: 80-File.t,v 1.7 2003/05/27 16:12:06 unimlo Exp $
+# $Id: 80-File.t,v 1.8 2003/05/28 14:32:24 unimlo Exp $
 
 use strict;
 
@@ -64,9 +64,6 @@ my %myconf;
 foreach my $line (split(/\n/,$myconf))
  {
   next if $line =~ /^!/;
-  $line =~ s/ any/$1 0.0.0.0 255.255.255.255/g;
-  $line =~ s/ seq \d+ / /g;
-  $line =~ s/(route-map .* (?:permit|deny)) \d+$/$1/;
   $myconf{$line} ||= 0;
   $myconf{$line} += 1;
  };
@@ -130,6 +127,7 @@ foreach my $pair (
   ok(! defined $list2->name,"Name removed for $type $name");
   foreach my $line (split(/\n/,$conf))
    {
+    next if $line =~ /^!/;
     ok(defined $myconf{$line},'Got correct configline: ' . $line);
     if (defined $myconf{$line})
      {

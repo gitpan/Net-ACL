@@ -1,6 +1,6 @@
 #!/usr/bin/perl
 
-# $Id: Standard.pm,v 1.3 2003/05/27 22:42:05 unimlo Exp $
+# $Id: Standard.pm,v 1.5 2003/05/28 14:38:59 unimlo Exp $
 
 package Net::ACL::File::Standard;
 
@@ -10,7 +10,7 @@ use vars qw( $VERSION @ISA );
 ## Inheritance and Versioning ##
 
 @ISA     = qw( Net::ACL::File );
-$VERSION = '0.02';
+$VERSION = '0.03';
 
 ## Module Imports ##
 
@@ -27,10 +27,9 @@ sub load
 
  my $obj = $class->new;
 
- my $list = $config->subs ? $config->subs : $config;
-
- foreach my $rule ($list->get) # ($config->block && ! $all ? $config->kids : $config->get)
+ foreach my $rule ($config->get)
   {
+# warn "DO LOADMATCH:\n${rule}---CUT---\n";
    $obj->loadmatch($rule,$config);
   };
 

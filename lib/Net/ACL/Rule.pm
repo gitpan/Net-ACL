@@ -1,6 +1,6 @@
 #!/usr/bin/perl
 
-# $Id: Rule.pm,v 1.8 2003/05/27 23:41:50 unimlo Exp $
+# $Id: Rule.pm,v 1.11 2003/05/28 14:38:59 unimlo Exp $
 
 package Net::ACL::Rule;
 
@@ -13,7 +13,7 @@ use vars qw(
 ## Inheritance and Versioning ##
 
 @ISA     = qw( Exporter );
-$VERSION = '0.02';
+$VERSION = '0.03';
 
 ## Module Imports ##
 
@@ -53,7 +53,8 @@ sub new
  my $this = {
         _action => ACL_PERMIT,
 	_match => [],
-	_set => []
+	_set => [],
+	_seq => undef
   };
 
  bless($this, $class);
@@ -66,6 +67,10 @@ sub new
      $value = ACL_PERMIT if $value =~ /permit/i;
      $value = ACL_DENY if $value =~ /deny/i;
      $this->{_action} = $value;
+    }
+   elsif ( $arg =~ /seq/i )
+    {
+     $this->{_seq} = $value;
     }
    elsif ( $arg =~ /match/i )
     {
@@ -93,6 +98,7 @@ sub clone
  my $clone;
 
  $clone->{_action} = $proto->{_action};
+ $clone->{_seq} = $proto->{_seq};
 
  foreach my $key (qw(_set _match ))
   {
@@ -105,10 +111,16 @@ sub clone
 
 ## Public Object Methods ##
 
+sub seq
+{
+ my $this = shift;
+ $this->{_seq} = @_ ? shift : $this->{_seq};
+ return $this->{_seq};
+}
+
 sub action
 {
  my $this = shift;
-
  $this->{_action} = @_ ? shift : $this->{_action};
  return $this->{_action};
 }
@@ -247,9 +259,10 @@ Net::ACL::Rule - Class representing a generic access-list/route-map entry
 		}
 	Set	=> {
 		IP	=> '127.0.0.1'
-		}
+		},
+	Seq	=> 10
 	);
-		
+
     # Object Copy
     $clone = $entry->clone();
 
@@ -289,7 +302,7 @@ I<new()> - create a new Net::ACL::Rule object
 		IP	=> '127.0.0.1'
 		}
 	);
-		
+
 This is the constructor for Net::ACL::Rule objects. It returns a
 reference to the newly created object. The following named parameters may
 be passed to the constructor.

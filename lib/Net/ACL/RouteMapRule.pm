@@ -1,6 +1,6 @@
 #!/usr/bin/perl
 
-# $Id: RouteMapRule.pm,v 1.10 2003/05/27 23:41:50 unimlo Exp $
+# $Id: RouteMapRule.pm,v 1.12 2003/05/28 14:38:59 unimlo Exp $
 
 package Net::ACL::RouteMapRule;
 
@@ -10,7 +10,7 @@ use vars qw( $VERSION @ISA @EXPORT @EXPORT_OK %EXPORT_TAGS @ACL_ROUTEMAP_INDEX )
 ## Inheritance and Versioning ##
 
 @ISA     = qw( Net::ACL::Rule );
-$VERSION = '0.02';
+$VERSION = '0.03';
 
 ## Module Imports ##
 
@@ -30,7 +30,7 @@ sub ACL_ROUTEMAP_MED       { 5; };
 
 @ACL_ROUTEMAP_INDEX = qw (
 	ACL_ROUTEMAP_ASPATH ACL_ROUTEMAP_COMMUNITY ACL_ROUTEMAP_PREFIX
-	ACL_ROUTEMAP_NEXTHOP
+	ACL_ROUTEMAP_NEXTHOP ACL_ROUTEMAP_LOCALPREF ACL_ROUTEMAP_MED
 	);
 
 @EXPORT      = ();
@@ -59,13 +59,23 @@ sub autoconstruction
    $data = $values[0] if $data eq '';
    return $this->SUPER::autoconstruction($type,undef,'Scalar',ACL_ROUTEMAP_COMMUNITY,$data);
   }
- elsif ( $arg =~ /^ip address (prefix-list) (.*)$/ )
+ elsif ( $arg =~ /^ip (address|next-hop) ((?:prefix-list )|)(.*)$/ )
   {
-   return $this->SUPER::autoconstruction($type,undef,'List',ACL_ROUTEMAP_PREFIX,Name=>$2,Type=>$1);
-  }
- elsif ( $arg =~ /^ip next-hop (prefix-list) (.*)$/ )
-  {
-   return $this->SUPER::autoconstruction($type,undef,'List',ACL_ROUTEMAP_NEXTHOP,Name=>$2,Type=>$1);
+   my $index = $1 eq 'address' ? ACL_ROUTEMAP_PREFIX : ACL_ROUTEMAP_NEXTHOP;
+   my $ltype = $2 eq '' ? 'access-list' : 'prefix-list';
+   my @lists;
+   foreach my $list (split(/ /,$3))
+    {
+     if ($list =~ /^\d{3}$/)
+      {
+       push(@lists,{Name=>$list,Type=>'extended-access-list'});
+      }
+     else
+      {
+       push(@lists,{Name=>$list,Type=>$ltype});
+      };
+    };
+   return $this->SUPER::autoconstruction($type,undef,'List',$index,@lists);
   }
  elsif ($arg =~ /next[ _-]?hop/i )
   {
@@ -83,13 +93,20 @@ sub autoconstruction
   {
    return $this->SUPER::autoconstruction($type,undef,'Scalar',ACL_ROUTEMAP_MED,@values);
   }
- elsif ( $arg =~ /local[ _-]?pref/i )
+ elsif ( $arg =~ /local[ _-]?pref(?:erence)?(?: (\d+))?$/i )
   {
-   return $this->SUPER::autoconstruction($type,undef,'Scalar',ACL_ROUTEMAP_LOCALPREF,@values);
+   my $val = $1 || $values[0];
+   return $this->SUPER::autoconstruction($type,undef,'Scalar',ACL_ROUTEMAP_LOCALPREF,$val);
   }
- elsif (($arg =~ /as[ _-]?path/i ) && ( $type eq 'Match'))
+ elsif (($arg =~ /as[ _-]?path(?: (.*))?$/i ) && ( $type eq 'Match'))
   {
-   return $this->SUPER::autoconstruction($type,undef,'Regexp',ACL_ROUTEMAP_ASPATH,@values);
+   my @lists;
+   my @l = defined $1 ? $1 : @values;
+   foreach my $list (@l)
+    {
+     push(@lists,{Name=>$list,Type=>'as-path-list'});
+    };
+   return $this->SUPER::autoconstruction($type,undef,'List',ACL_ROUTEMAP_ASPATH,@lists);
   }
  elsif (($arg =~ /(?:as[ _-]?path)|(?:prepend)/i ) && ( $type eq 'Set'))
   {

@@ -1,6 +1,6 @@
 #!/usr/bin/perl
 
-# $Id: ACL.pm,v 1.8 2003/05/27 23:41:48 unimlo Exp $
+# $Id: ACL.pm,v 1.11 2003/05/28 14:38:59 unimlo Exp $
 
 package Net::ACL;
 
@@ -10,7 +10,7 @@ use vars qw( $VERSION @ISA );
 ## Inheritance and Versioning ##
 
 @ISA     = qw( Exporter );
-$VERSION = '0.02';
+$VERSION = '0.03';
 
 ## Module Imports ##
 
@@ -207,6 +207,7 @@ sub add_rule
 {
  my $this = shift;
  push(@{$this->{_rules}},@_);
+ $this->{_rules} = [ sort { ($a->seq || 0) <=> ($b->seq || 0) } @{$this->{_rules}} ];
 }
 
 sub remove_rule
@@ -289,11 +290,13 @@ Net::ACL - Class representing a generic access-list/route-map
 =head1 DESCRIPTION
 
 This module represent a generic access-list and route-map. It uses the
-B<Net::ACL::Rule> object to represent the rules.
+L<Net::ACL::Rule|Net::ACL::Rule> object to represent the rules.
 
 =head1 CONSTRUCTOR
 
-I<new()> - create a new Net::ACL object
+=over 4
+
+=item new() - create a new Net::ACL object
 
     $list = new Net::ACL(
         Name    => 'MyACL',
@@ -305,32 +308,46 @@ This is the constructor for Net::ACL objects. It returns a
 reference to the newly created object. The following named parameters may
 be passed to the constructor.
 
-=head2 Name
+=over 4
+
+=item Name
 
 The name parameter is optional and is only used to identify a list by the
-B<renew> constructor.
+renew() constructor.
 
-=head2 Type
+=item Type
 
 The type parameter is optional and defaults to the class name. It is used
-have different namespaces for the B<Name> parameter. It is intended to have
+have different namespaces for the Name parameter. It is intended to have
 values like 'ip-accesslist', 'prefix-list', 'as-path-filter' and 'route-map'.
 This way the same name or number of an accesslist could be reused in each
 class.
 
-=head2 Rule
+=item Rule
 
 The rule parameter could be pressent one or more times. Each one can have
 mulitple types:
 
-B<Net::ACL::Rule> - A Net::ACL::Rule object.
+=over 4
 
-B<ARRAY> - An array reference of Net::ACL::Rule objects.
+=item Net::ACL::Rule
 
-B<HASH> - A hash reference with Net::ACL:Rule objects as values. Keys are
+A Net::ACL::Rule object.
+
+=item ARRAY
+
+An array reference of Net::ACL::Rule objects.
+
+=item HASH
+
+A hash reference with Net::ACL:Rule objects as values. Keys are
 currently ignored, but might later be used as sequance numbers or labels.
 
-I<renew()> - fetch an existing Net::ACL object
+=back
+
+=back
+
+=item renew() - fetch an existing Net::ACL object
 
     $list = renew Net::ACL(
 	Name	=> 'MyACL'
@@ -340,12 +357,16 @@ I<renew()> - fetch an existing Net::ACL object
 
 The renew constructor localizes an existing ACL object from either
 Name, (Name,Type)-pair or the object in string context (e.g.
-I<Net::ACL=HASH(0x823ff84)>). The Name and Yype arguments
-have simular meaning as for the B<new> constructor.
+C<Net::ACL=HASH(0x823ff84)>). The Name and Yype arguments
+have simular meaning as for the new() constructor.
+
+=back
 
 =head1 OBJECT COPY
 
-I<clone()> - clone a Net::ACL object
+=over 4
+
+=item clone() - clone a Net::ACL object
 
     $clone = $list->clone();
 
@@ -353,43 +374,49 @@ This method creates an exact copy of the Net::ACL object and all
 the rules. The clone will not have a name unless one is assigned explicitly
 later.
 
+=back
+
 =head1 ACCESSOR METHODS
 
-I<name()>
+=over 4
 
-I<type()>
+=item name()
+
+=item type()
 
 The name and type methods returns the access-list name and type fields
 respectivly. If called with an argument they change the value to that of the
 argument.
 
-I<match()>
+=item match()
 
 The match method implements the basic idear of a stadard router access-list
 matching.
 
 It get any abitrary number of arguments. The arguments are passed
-to the B<match> method of each of the B<Net::ACL::Rule> rules
-except any object which have the B<Action> field set to ACL_CONTINUE.
-When a B<match> method returns ACL_MATCH, the B<Action> of that
+to the match() method of each of the Net::ACL::Rule rules
+except any object which have the action() field set to C<ACL_CONTINUE>.
+When a match() method returns C<ACL_MATCH>, the action() of that
 entry is returned.
 
-I<query()>
+=item query()
 
 The query method implements the basic idear of a route-map execution.
 
-It calls the B<Net::ACL::Rule> rules B<query> method
-one by one as long as they return ACL_CONTINUE.
+It calls the Net::ACL::Rule rules query() method
+one by one as long as they return C<ACL_CONTINUE>.
 
-The function returns the result code (ACL_PERMIT or ACL_DENY)
+The function returns the result code (C<ACL_PERMIT> or C<ACL_DENY>)
 and the, posibly modified, arguments of the function.
 
-I<add_rule()>
+=item add_rule()
 
-I<remove_rule()>
+=item remove_rule()
 
 The add and remove rule methods can add and remove rules after object
 construction.
+
+=back
 
 =head1 SEE ALSO
 

@@ -27,8 +27,11 @@ lib/Net/ACL/Set/Scalar.pm
 t/01-Reconfig.t
 t/02-Netmask.t
 t/10-MatchIP.t
+t/11-MatchPrefix.t
 t/20-MatchList.t
 t/30-SetScalar.t
 t/40-ACL.t
+t/41-Bootstrap.t
 t/50-RouteMap.t
 t/80-File.t
+t/81-RealFile.t

@@ -1,6 +1,6 @@
 #!/usr/bin/perl
 
-# $Id: Prefix.pm,v 1.2 2003/05/27 22:42:05 unimlo Exp $
+# $Id: Prefix.pm,v 1.5 2003/05/28 14:38:59 unimlo Exp $
 
 package Net::ACL::File::PrefixRule;
 
@@ -10,7 +10,7 @@ use vars qw( $VERSION @ISA );
 ## Inheritance ##
 
 @ISA     = qw( Net::ACL::Rule );
-$VERSION = '0.02';
+$VERSION = '0.03';
 
 ## Module Imports ##
 
@@ -26,7 +26,10 @@ sub asconfig
  my $match = $this->{_match}->[0];
  my $net = $match->net if defined $match;
  my $str = $net->base . '/' . $net->bits if defined $net;
- return 'ip prefix-list ' . $name . ' ' . $this->action_str . ($str eq '' ? '' : ' ' . $str) . "\n";
+ my $ext = $match->mode ? ' ' . $match->mode . ' ' . $match->size : '';
+ my $seq = $this->seq;
+ $seq = defined $seq ? " seq $seq" : '';
+ return 'ip prefix-list '.$name.$seq.' '.$this->action_str.($str eq '' ?'':" $str") . "$ext\n";
 }
 
 ## End of Net::ACL::File::PrefixRule ##
@@ -39,7 +42,7 @@ use vars qw( $VERSION @ISA );
 ## Inheritance ##
 
 @ISA     = qw( Net::ACL::File::Standard );
-$VERSION = '0.02';
+$VERSION = '0.03';
 
 ## Module Imports ##
 
@@ -54,17 +57,23 @@ Net::ACL::File->add_listtype('prefix-list',__PACKAGE__,'ip prefix-list');
 
 sub loadmatch
 {
- my ($this,$line) = @_;
- croak "Configuration line format error in line: '$line'"
-	unless $line =~ /^ip prefix-list ([^ ]+) (?:seq \d+ )?(permit|deny)(.*)$/i;
- my ($name,$action,$data) = ($1,$2,$3);
- $data =~ s/^ //;
- my $rule = new Net::ACL::File::PrefixRule(
-	Action	=> $action
+ my ($this,$lines) = @_;
+
+ foreach my $line ($lines->single ? $lines : $lines->get) # For some reasons we got more then one!
+  {
+   croak "Configuration line format error in line: '$line'"
+	unless $line =~ /^ip prefix-list ([^ ]+) (?:seq (\d+) |)(permit|deny|description)(.*)$/i;
+   my ($name,$seq,$action,$data) = ($1,$2,$3,$4);
+   return if $action eq 'description';
+   $data =~ s/^ //;
+   my $rule = new Net::ACL::File::PrefixRule(
+	Action	=> $action,
+	Seq	=> $seq
 	);
- $rule->add_match($rule->autoconstruction('Match','Net::ACL::Match::Prefix','Prefix',0,$data));
- $this->add_rule($rule);
- $this->name($name);
+   $rule->add_match($rule->autoconstruction('Match','Net::ACL::Match::Prefix','Prefix',0,$data));
+   $this->add_rule($rule);
+   $this->name($name);
+  };
 }
 
 ## POD ##

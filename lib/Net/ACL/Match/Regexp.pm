@@ -1,6 +1,6 @@
 #!/usr/bin/perl
 
-# $Id: Regexp.pm,v 1.2 2003/05/27 22:42:07 unimlo Exp $
+# $Id: Regexp.pm,v 1.3 2003/05/28 14:38:59 unimlo Exp $
 
 package Net::ACL::Match::Regexp;
 
@@ -10,7 +10,7 @@ use vars qw( $VERSION @ISA );
 ## Inheritance and Versioning ##
 
 @ISA     = qw( Net::ACL::Match::Scalar );
-$VERSION = '0.02';
+$VERSION = '0.03';
 
 ## Module Imports ##
 

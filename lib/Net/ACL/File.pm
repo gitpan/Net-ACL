@@ -1,6 +1,6 @@
 #!/usr/bin/perl
 
-# $Id: File.pm,v 1.5 2003/05/27 22:42:01 unimlo Exp $
+# $Id: File.pm,v 1.7 2003/05/28 14:38:59 unimlo Exp $
 
 package Net::ACL::File;
 
@@ -10,7 +10,7 @@ use vars qw( $VERSION @ISA );
 ## Inheritance and Versioning ##
 
 @ISA     = qw( Net::ACL );
-$VERSION = '0.02';
+$VERSION = '0.03';
 
 ## Module Imports ##
 
@@ -61,10 +61,11 @@ sub load
   {
    my $aclclass = $listtypes{$match}->{_class};
    my $lists = $obj->get($match);
-   foreach my $list ($lists->single ? $lists : $lists->get)
+   foreach my $list ($lists->single ? $lists : $lists->all) # Was get not all
     {
      next if $list->text eq '';
      my $acl = $aclclass->load($list);
+     next unless defined $acl->name; # No list name - no list at all!
      $acl->type($listtypes{$match}->{_type});
      $res->{$acl->type}->{$acl->name} = $acl;
     }
@@ -116,47 +117,70 @@ Net::ACL::File - Access-lists constructed from configuration file like syntax.
 =head1 DESCRIPTION
 
 This module extends the Net::ACL class with a load constructor that loads one
-or more objects from a cisco-like configuration file using B<Cisco::Reconfig>.
+or more objects from a cisco-like configuration file using Cisco::Reconfig.
 
 =head1 CONSTRUCTOR
+
+=over 4
+
+=item load() - Load one or more Net::ACL objects from a configuration string.
 
     $list_hr = load Net::ACL::File($config);
 
 This special constructor parses a cisco-like router configuration.
 
 The constructor takes one argument which should either be a string or a
-B<Cisco::Reconfig> object.
+Cisco::Reconfig object.
 
 It returns a hash reference. The hash is indexed on
 list-types. Currently supporting the following:
 
-I<community-list>, I<as-path-list>, I<prefix-list>,
-I<access-list>, I<route-map>
+=over 4
+
+=item C<community-list>
+
+=item C<as-path-list>
+
+=item C<prefix-list>
+
+=item C<access-list>
+
+=item C<route-map>
+
+=back
 
 Each list-type hash value conains a new hash reference indexed on list names
 or numbers.
 
+=back
+
 =head1 CLASS METHODS
 
-I<add_listtype()>
+=over 4
+
+=item add_listtype()
 
 The add_listtype class method registers a new class of access-lists.
 
 The first argument is the type-string of the new class.
 The second argument is the class to be registered. The class should be a
-sub-class of Net::BGP::File::Standard. Normaly this should be '__PACKAGE__'.
+sub-class of Net::BGP::File::Standard. Normaly this should be C<__PACKAGE__>.
 
 The third argument is used to match the lines in the configuration file using
-B<Cisco::Reconfig>'s B<all(REGEXP)> method. If match argument is not defined,
+Cisco::Reconfig's get() method. If match argument is not defined,
 the type string will be used.
 
 The forth argument is used to load the class with a "use" statement. This
 should only be needed if the class is located in a different package.
 Default is the class name from the second argument.
 
+=back
+
 =head1 ACCESSOR METHODS
 
-I<asconfig()>
+=over 4
+
+=item asconfig()
 
 This function tries to generate a configuration matching the one the load
 constructer got. It can read from any access-list. The resulting configuration
@@ -167,9 +191,11 @@ use:
 
 	$conf = Net::ACL::File->asconfig($acl);
 
+=back
+
 =head1 SEE ALSO
 
-B<Net::ACL>, B<Cisco::Reconfig>, B<Net::ACL::File::Standard>
+Net::ACL, Cisco::Reconfig, Net::ACL::File::Standard
 
 =head1 AUTHOR
 

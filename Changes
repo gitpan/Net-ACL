@@ -1,8 +1,16 @@
-$Id: Changes,v 1.5 2003/05/27 23:41:37 unimlo Exp $
+$Id: Changes,v 1.6 2003/05/28 14:31:55 unimlo Exp $
 
 Revision history for Perl extension Net::ACL.
 
-0.02  Wed May 28
+0.03  Wed May 28
+	- added support for minimim/maximum prefix-lengh in Match::Prefix
+	- some documentation updated
+	- some documentation switched to use =item instead of B<> or I<> for
+		methods/arguments. The rest will follow later
+	- added/fixed a few configuration string syntaxes
+	- added a few test scripts and updated others
+
+0.02  Wed May 27
 	- added half a test script for route-map
 	- changed constructors for set and match objects to always have index as first argument.
 	- documentation clean-up!
