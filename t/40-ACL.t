@@ -1,6 +1,6 @@
 #!/usr/bin/perl -wT
 
-# $Id: 40-ACL.t,v 1.1 2003/05/27 02:08:36 unimlo Exp $
+# $Id: 40-ACL.t,v 1.2 2003/05/27 23:41:57 unimlo Exp $
 
 use strict;
 
@@ -23,7 +23,7 @@ ok(ref $elist eq 'Net::ACL','Simple ACL construction');
 my $rule1 = new Net::ACL::Rule(
 	Action	=> ACL_DENY,
 	Match	=> {
-		IP	=> '10.10.0.0/16'
+		IP	=> [0,'10.10.0.0/16']
 		}
 	);
 ok(ref $rule1 eq 'Net::ACL::Rule','Rule construction 1');
@@ -31,7 +31,7 @@ ok(ref $rule1 eq 'Net::ACL::Rule','Rule construction 1');
 my $rule2 = new Net::ACL::Rule(
 	Action	=> ACL_PERMIT,
 	Match	=> {
-		IP	=> '10.0.0.0/8'
+		IP	=> [0,'10.0.0.0/8']
 		}
 	);
 ok(ref $rule2 eq 'Net::ACL::Rule','Rule construction 2');
@@ -39,7 +39,7 @@ ok(ref $rule2 eq 'Net::ACL::Rule','Rule construction 2');
 my $rule3 = new Net::ACL::Rule(
 	Action	=> ACL_PERMIT,
 	Match	=> {
-		IP	=> '127.0.0.1'
+		IP	=> [0,'127.0.0.1']
 		}
 	);
 ok(ref $rule3 eq 'Net::ACL::Rule','Rule construction 3');
@@ -47,10 +47,10 @@ ok(ref $rule3 eq 'Net::ACL::Rule','Rule construction 3');
 my $rule1b = new Net::ACL::Rule(
 	Action	=> ACL_CONTINUE,
 	Match	=> {
-		IP	=> '127.0.0.0/8'
+		IP	=> [0,'127.0.0.0/8']
 		},
 	Set	=> {
-		Scalar	=> '127.0.0.1'
+		Scalar	=> [0,'127.0.0.1']
 		}
 	);
 ok(ref $rule1b eq 'Net::ACL::Rule','Rule construction 4');

@@ -1,6 +1,6 @@
 #!/usr/bin/perl
 
-# $Id: IPAccessExt.pm,v 1.2 2003/05/27 15:55:34 unimlo Exp $
+# $Id: IPAccessExt.pm,v 1.3 2003/05/27 22:42:05 unimlo Exp $
 
 package Net::ACL::File::IPAccessExtRule;
 
@@ -9,8 +9,8 @@ use vars qw( $VERSION @ISA );
 
 ## Inheritance ##
 
-@ISA     = qw( Exporter Net::ACL::IPAccessExtRule );
-$VERSION = '0.01';
+@ISA     = qw( Net::ACL::IPAccessExtRule );
+$VERSION = '0.02';
 
 ## Module Imports ##
 
@@ -52,8 +52,8 @@ use vars qw( $VERSION @ISA );
 
 ## Inheritance ##
 
-@ISA     = qw( Exporter Net::ACL::File::Standard );
-$VERSION = '0.01';
+@ISA     = qw( Net::ACL::File::Standard );
+$VERSION = '0.02';
 
 ## Module Imports ##
 
@@ -63,7 +63,7 @@ use Carp;
 
 ## Net::ACL::File Class Auto Registration Code ##
 
-Net::ACL::File->add_knownlist('extended-access-list',__PACKAGE__,'ip access-list extended');
+Net::ACL::File->add_listtype('extended-access-list',__PACKAGE__,'ip access-list extended');
 
 ## Public Object Methods ##
 
@@ -86,9 +86,9 @@ sub loadmatch
  my $rule = new Net::ACL::File::IPAccessExtRule(
 	Action	=> $action
 	);
- $rule->add_match($rule->autoconstruction('Match','Net::ACL::Match::Scalar','Scalar',[$proto,ACL_EIA_PROTO]));
- $rule->add_match($rule->autoconstruction('Match','Net::ACL::Match::IP','IP','#'.ACL_EIA_FROM,$from));
- $rule->add_match($rule->autoconstruction('Match','Net::ACL::Match::IP','IP','#'.ACL_EIA_TO,$to));
+ $rule->add_match($rule->autoconstruction('Match','Net::ACL::Match::Scalar','Scalar',ACL_EIA_PROTO,$proto));
+ $rule->add_match($rule->autoconstruction('Match','Net::ACL::Match::IP','IP',ACL_EIA_FROM,$from));
+ $rule->add_match($rule->autoconstruction('Match','Net::ACL::Match::IP','IP',ACL_EIA_TO,$to));
  $this->add_rule($rule);
  $this->name($1)
 	if ! defined($this->name)

@@ -1,6 +1,6 @@
 #!/usr/bin/perl
 
-# $Id: IPAccess.pm,v 1.1 2003/05/26 22:02:51 unimlo Exp $
+# $Id: IPAccess.pm,v 1.2 2003/05/27 22:42:05 unimlo Exp $
 
 package Net::ACL::File::IPAccessRule;
 
@@ -9,8 +9,8 @@ use vars qw( $VERSION @ISA );
 
 ## Inheritance ##
 
-@ISA     = qw( Exporter Net::ACL::Rule );
-$VERSION = '0.01';
+@ISA     = qw( Net::ACL::Rule );
+$VERSION = '0.02';
 
 ## Module Imports ##
 
@@ -38,8 +38,8 @@ use vars qw( $VERSION @ISA );
 
 ## Inheritance ##
 
-@ISA     = qw( Exporter Net::ACL::File::Standard );
-$VERSION = '0.01';
+@ISA     = qw( Net::ACL::File::Standard );
+$VERSION = '0.02';
 
 ## Module Imports ##
 
@@ -48,7 +48,7 @@ use Carp;
 
 ## Net::ACL::File Class Auto Registration Code ##
 
-Net::ACL::File->add_knownlist('access-list',__PACKAGE__,'access-list');
+Net::ACL::File->add_listtype('access-list',__PACKAGE__,'access-list');
 
 ## Public Object Methods ##
 
@@ -64,7 +64,7 @@ sub loadmatch
  my $rule = new Net::ACL::File::IPAccessRule(
 	Action	=> $action
 	);
- $rule->add_match($rule->autoconstruction('Match','Net::ACL::Match::IP','IP',$data));
+ $rule->add_match($rule->autoconstruction('Match','Net::ACL::Match::IP','IP',0,$data));
  $this->add_rule($rule);
  $this->name($name);
 }

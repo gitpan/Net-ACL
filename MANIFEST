@@ -30,5 +30,5 @@ t/10-MatchIP.t
 t/20-MatchList.t
 t/30-SetScalar.t
 t/40-ACL.t
+t/50-RouteMap.t
 t/80-File.t
-t/99-RouteMap.t

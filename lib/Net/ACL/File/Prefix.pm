@@ -1,6 +1,6 @@
 #!/usr/bin/perl
 
-# $Id: Prefix.pm,v 1.1 2003/05/27 02:56:27 unimlo Exp $
+# $Id: Prefix.pm,v 1.2 2003/05/27 22:42:05 unimlo Exp $
 
 package Net::ACL::File::PrefixRule;
 
@@ -9,8 +9,8 @@ use vars qw( $VERSION @ISA );
 
 ## Inheritance ##
 
-@ISA     = qw( Exporter Net::ACL::Rule );
-$VERSION = '0.01';
+@ISA     = qw( Net::ACL::Rule );
+$VERSION = '0.02';
 
 ## Module Imports ##
 
@@ -38,8 +38,8 @@ use vars qw( $VERSION @ISA );
 
 ## Inheritance ##
 
-@ISA     = qw( Exporter Net::ACL::File::Standard );
-$VERSION = '0.01';
+@ISA     = qw( Net::ACL::File::Standard );
+$VERSION = '0.02';
 
 ## Module Imports ##
 
@@ -48,7 +48,7 @@ use Carp;
 
 ## Net::ACL::File Class Auto Registration Code ##
 
-Net::ACL::File->add_knownlist('prefix-list',__PACKAGE__,'ip prefix-list');
+Net::ACL::File->add_listtype('prefix-list',__PACKAGE__,'ip prefix-list');
 
 ## Public Object Methods ##
 
@@ -62,7 +62,7 @@ sub loadmatch
  my $rule = new Net::ACL::File::PrefixRule(
 	Action	=> $action
 	);
- $rule->add_match($rule->autoconstruction('Match','Net::ACL::Match::Prefix','Prefix',$data));
+ $rule->add_match($rule->autoconstruction('Match','Net::ACL::Match::Prefix','Prefix',0,$data));
  $this->add_rule($rule);
  $this->name($name);
 }

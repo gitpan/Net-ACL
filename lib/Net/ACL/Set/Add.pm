@@ -1,17 +1,16 @@
 #!/usr/bin/perl
 
-# $Id: Add.pm,v 1.1 2003/05/27 12:52:53 unimlo Exp $
+# $Id: Add.pm,v 1.3 2003/05/27 23:41:55 unimlo Exp $
 
 package Net::ACL::Set::Add;
 
 use strict;
-use Exporter;
 use vars qw( $VERSION @ISA );
 
 ## Inheritance and Versioning ##
 
-@ISA     = qw( Net::ACL::Set::Scalar Exporter );
-$VERSION = '0.01';
+@ISA     = qw( Net::ACL::Set::Scalar );
+$VERSION = '0.02';
 
 ## Module Imports ##
 
@@ -34,49 +33,44 @@ sub set
 
 =head1 NAME
 
-Net::ACL::Set::Scalar - Class replacing a scalar data element
+Net::ACL::Set::Add - Class adding a value to a data element
 
 =head1 SYNOPSIS
 
-    use Net::ACL::Set::Scalar;
+    use Net::ACL::Set::Add;
 
     # Construction
-    my $set = new Net::ACL::Set::Scalar([42,1]);
+    my $set = new Net::ACL::Set::Add(42,1);
 
     # Accessor Methods
-    @data = $set->set(@data); # same as: $data[1] = 42;
+    @data = $set->set(@data); # same as: $data[1] += 42;
 
 =head1 DESCRIPTION
 
-This module is a very simpel array ellement replacement utility to allow
-simple value replacement with B<Net::ACL::Rule>.
+This module is a very simpel array element addition utility to allow
+simple value addition with Net::ACL::Rule. Note that using overloading
+of the "+=" operator, complex operation can be executed for objects.
 
 =head1 CONSTRUCTOR
 
-    my $set = new Net::ACL::Set::Scalar(42,1);
+    my $set = new Net::ACL::Set::Add(42,1);
 
-This is the constructor for Net::ACL::Set::Scalar objects.
+This is the constructor for Net::ACL::Set::Add objects.
 It returns a reference to the newly created object.
 
-It takes one argument. If the argument is a array reference with one element,
-the element will be placed instead of the first argument to the set method.
-
-If an array reference has more then one element, the second element should be
-the argument number to br replaced in the set method.
-
-Otherwise, the value will directly be used instead of the first argument of
-the set method.
+The first argument is the argument number to set that should be modified.
+The second arguement are the value added the the element.
 
 =head1 ACCESSOR METHODS
 
 I<set()>
 
-This function modifyes the arguments acording to the arguments of the
+This function modifies the arguments according to the arguments of the
 constructor and returns them.
 
 =head1 SEE ALSO
 
-B<Net::ACL::Set>, B<Net::ACL::Rule>, B<Net::ACL>
+Net::ACL::Set, Net::ACL::Set::Scalar, Net::ACL
 
 =head1 AUTHOR
 
@@ -84,6 +78,6 @@ Martin Lorensen <bgp@martin.lorensen.dk>
 
 =cut
 
-## End Package Net::ACL::Set::Scalar ##
+## End Package Net::ACL::Set::Add ##
  
 1;

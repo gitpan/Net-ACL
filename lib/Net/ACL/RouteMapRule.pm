@@ -1,17 +1,21 @@
 #!/usr/bin/perl
 
-# $Id: RouteMapRule.pm,v 1.8 2003/05/27 15:55:31 unimlo Exp $
+# $Id: RouteMapRule.pm,v 1.10 2003/05/27 23:41:50 unimlo Exp $
 
 package Net::ACL::RouteMapRule;
 
 use strict;
 use vars qw( $VERSION @ISA @EXPORT @EXPORT_OK %EXPORT_TAGS @ACL_ROUTEMAP_INDEX );
-use Carp;
 
 ## Inheritance and Versioning ##
 
-@ISA     = qw( Net::ACL::Rule Exporter );
-$VERSION = '0.01';
+@ISA     = qw( Net::ACL::Rule );
+$VERSION = '0.02';
+
+## Module Imports ##
+
+use Carp;
+use Net::ACL::Rule;
 
 ## Constants For Argument numbering ##
 
@@ -19,6 +23,8 @@ sub ACL_ROUTEMAP_ASPATH    { 0; };
 sub ACL_ROUTEMAP_COMMUNITY { 1; };
 sub ACL_ROUTEMAP_PREFIX    { 2; };
 sub ACL_ROUTEMAP_NEXTHOP   { 3; };
+sub ACL_ROUTEMAP_LOCALPREF { 4; };
+sub ACL_ROUTEMAP_MED       { 5; };
 
 ## Export Tag Definitions ##
 
@@ -34,7 +40,6 @@ sub ACL_ROUTEMAP_NEXTHOP   { 3; };
     ALL		=> [ @EXPORT, @EXPORT_OK ]
 );
 
-
 ## Public Object Methods ##
 
 sub autoconstruction
@@ -45,20 +50,55 @@ sub autoconstruction
  my ($type,$ruleclass,$arg,@values) = @_;
  if ( $arg =~ /aspath prepend (.*)$/i )
   {
-   return $this->SUPER::autoconstruction($type,undef,'Add',[$1,ACL_ROUTEMAP_ASPATH]);
+   return $this->SUPER::autoconstruction($type,undef,'Add',ACL_ROUTEMAP_ASPATH,$1);
   }
- elsif ( $arg =~ /^community (.*)$/ )
+ elsif ( $arg =~ /^community(.*)$/i )
   {
-   return $this->SUPER::autoconstruction($type,undef,'Scalar',[$1,ACL_ROUTEMAP_COMMUNITY]);
+   my $data = $1;
+   $data =~ s/^ //;
+   $data = $values[0] if $data eq '';
+   return $this->SUPER::autoconstruction($type,undef,'Scalar',ACL_ROUTEMAP_COMMUNITY,$data);
   }
  elsif ( $arg =~ /^ip address (prefix-list) (.*)$/ )
   {
-   return $this->SUPER::autoconstruction($type,undef,'List',{Name=>$2,Type=>$1,Index=>ACL_ROUTEMAP_PREFIX});
+   return $this->SUPER::autoconstruction($type,undef,'List',ACL_ROUTEMAP_PREFIX,Name=>$2,Type=>$1);
   }
  elsif ( $arg =~ /^ip next-hop (prefix-list) (.*)$/ )
   {
-   return $this->SUPER::autoconstruction($type,undef,'List',{Name=>$2,Type=>$1,Index=>ACL_ROUTEMAP_NEXTHOP});
-  };
+   return $this->SUPER::autoconstruction($type,undef,'List',ACL_ROUTEMAP_NEXTHOP,Name=>$2,Type=>$1);
+  }
+ elsif ($arg =~ /next[ _-]?hop/i )
+  {
+   if ($type eq 'Set')
+    {
+     return $this->SUPER::autoconstruction($type,undef,'Scalar',ACL_ROUTEMAP_NEXTHOP,@values);
+    };
+   if ($values[0] =~ /(prefix-list) (.*)$/)
+    {
+     return $this->SUPER::autoconstruction($type,undef,'List',ACL_ROUTEMAP_NEXTHOP,Name=>$2,Type=>$1);
+    };
+   return $this->SUPER::autoconstruction($type,undef,'IP',ACL_ROUTEMAP_NEXTHOP,@values);
+  }
+ elsif ( $arg =~ /MED/i )
+  {
+   return $this->SUPER::autoconstruction($type,undef,'Scalar',ACL_ROUTEMAP_MED,@values);
+  }
+ elsif ( $arg =~ /local[ _-]?pref/i )
+  {
+   return $this->SUPER::autoconstruction($type,undef,'Scalar',ACL_ROUTEMAP_LOCALPREF,@values);
+  }
+ elsif (($arg =~ /as[ _-]?path/i ) && ( $type eq 'Match'))
+  {
+   return $this->SUPER::autoconstruction($type,undef,'Regexp',ACL_ROUTEMAP_ASPATH,@values);
+  }
+ elsif (($arg =~ /(?:as[ _-]?path)|(?:prepend)/i ) && ( $type eq 'Set'))
+  {
+   return $this->SUPER::autoconstruction($type,undef,'Add',ACL_ROUTEMAP_ASPATH,@values);
+  }
+ elsif (($arg =~ /prefix/i ) && ( $type eq 'Match'))
+  {
+   return $this->SUPER::autoconstruction($type,undef,'Prefix',ACL_ROUTEMAP_PREFIX,@values);
+  }
  if ($ruleclass =~ / /)
   {
    croak "Unknown RouteMap construction key '$arg'";
@@ -119,7 +159,7 @@ method.
 
 I<new()> - create a new Net::ACL::RouteMapRule object
 
-##### FILL IN HERE ######
+Inherited from
 
 I<query()>
 

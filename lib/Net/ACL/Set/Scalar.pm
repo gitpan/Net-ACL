@@ -1,17 +1,16 @@
 #!/usr/bin/perl
 
-# $Id: Scalar.pm,v 1.3 2003/05/27 12:52:10 unimlo Exp $
+# $Id: Scalar.pm,v 1.4 2003/05/27 22:42:08 unimlo Exp $
 
 package Net::ACL::Set::Scalar;
 
 use strict;
-use Exporter;
 use vars qw( $VERSION @ISA );
 
 ## Inheritance and Versioning ##
 
-@ISA     = qw( Net::ACL::Set Exporter );
-$VERSION = '0.01';
+@ISA     = qw( Net::ACL::Set );
+$VERSION = '0.02';
 
 ## Module Imports ##
 
@@ -24,17 +23,15 @@ sub new
 {
  my $proto = shift;
  my $class = ref $proto || $proto;
- my $value = shift;
- my $index = 0;
- if (ref $value eq 'ARRAY')
-  {
-   $index = $value->[1] || 0;
-   $value = $value->[0];
-  };
+ @_ = @{$_[0]} if (scalar @_ == 1) && (ref $_[0] eq 'ARRAY');
+
  my $this = {
-	_value => $value,
-	_index => $index
-	};
+        _index => shift,
+        _value => shift
+        };
+
+ croak "Index need to be a number\n" unless defined $this->{_index} && $this->{_index} =~ /^[0-9]+$/;
+
  bless($this,$class);
  return $this;
 }

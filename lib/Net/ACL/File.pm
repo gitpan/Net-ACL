@@ -1,17 +1,16 @@
 #!/usr/bin/perl
 
-# $Id: File.pm,v 1.4 2003/05/27 02:08:56 unimlo Exp $
+# $Id: File.pm,v 1.5 2003/05/27 22:42:01 unimlo Exp $
 
 package Net::ACL::File;
 
 use strict;
 use vars qw( $VERSION @ISA );
-use Carp;
 
 ## Inheritance and Versioning ##
 
-@ISA     = qw( Exporter Net::ACL );
-$VERSION = '0.01';
+@ISA     = qw( Net::ACL );
+$VERSION = '0.02';
 
 ## Module Imports ##
 
@@ -22,11 +21,11 @@ use Cisco::Reconfig;
 
 ## Private Global Class Variables ##
 
-my %knownlists;
+my %listtypes;
 
 ## Public Class Methods ##
 
-sub add_knownlist
+sub add_listtype
 {
  my $proto = shift;
  my $class = ref $proto || $proto;
@@ -41,8 +40,8 @@ sub add_knownlist
    croak "$aclclass is not a Net::ACL::File::Standard class"
 	unless ($aclclass->isa('Net::ACL::File::Standard'))
   };
- $knownlists{$match}->{_class} = $aclclass;
- $knownlists{$match}->{_type} = $type;
+ $listtypes{$match}->{_class} = $aclclass;
+ $listtypes{$match}->{_type} = $type;
 }
 
 sub load
@@ -58,15 +57,15 @@ sub load
 
  my $res;
 
- foreach my $match (keys %knownlists)
+ foreach my $match (keys %listtypes)
   {
-   my $aclclass = $knownlists{$match}->{_class};
+   my $aclclass = $listtypes{$match}->{_class};
    my $lists = $obj->get($match);
    foreach my $list ($lists->single ? $lists : $lists->get)
     {
      next if $list->text eq '';
      my $acl = $aclclass->load($list);
-     $acl->type($knownlists{$match}->{_type});
+     $acl->type($listtypes{$match}->{_type});
      $res->{$acl->type}->{$acl->name} = $acl;
     }
   };
@@ -105,14 +104,14 @@ Net::ACL::File - Access-lists constructed from configuration file like syntax.
 
     use Net::ACL::File;
 
+    Net::ACL::File->add_listtype('community-list', __PACKAGE__,'ip community-list');
+
     # Construction
-    $config = 'ip community-list 4 permit 65001:1¨;
+    $config = "ip community-list 4 permit 65001:1\n";
     $list_hr = load Net::ACL::File($config);
 
-    Net::ACL::File->add_knownlist('community-list', __PACKAGE__,'ip community-list');
-
     $list = renew Net::ACL(Type => 'community-list', Name => 4);
-    $config2 = $list->asconfig; # $config2 =~ /$config/;
+    $config = $list->asconfig;
 
 =head1 DESCRIPTION
 
@@ -131,16 +130,17 @@ B<Cisco::Reconfig> object.
 It returns a hash reference. The hash is indexed on
 list-types. Currently supporting the following:
 
-I<community-list>, I<as-path-list>, I<prefix-list>, I<access-list>
+I<community-list>, I<as-path-list>, I<prefix-list>,
+I<access-list>, I<route-map>
 
 Each list-type hash value conains a new hash reference indexed on list names
 or numbers.
 
 =head1 CLASS METHODS
 
-I<add_knownlist()>
+I<add_listtype()>
 
-The add_knownlist class method registers a new class of access-lists.
+The add_listtype class method registers a new class of access-lists.
 
 The first argument is the type-string of the new class.
 The second argument is the class to be registered. The class should be a
@@ -169,7 +169,7 @@ use:
 
 =head1 SEE ALSO
 
-B<Net::ACL>, B<Cisco::Reconfig>, B<Net::ACL::File>
+B<Net::ACL>, B<Cisco::Reconfig>, B<Net::ACL::File::Standard>
 
 =head1 AUTHOR
 

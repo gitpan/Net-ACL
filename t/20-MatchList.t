@@ -1,6 +1,6 @@
 #!/usr/bin/perl -wT
 
-# $Id: 20-MatchList.t,v 1.1 2003/05/27 02:08:36 unimlo Exp $
+# $Id: 20-MatchList.t,v 1.2 2003/05/27 23:19:24 unimlo Exp $
 
 use strict;
 
@@ -14,7 +14,7 @@ use_ok('Net::ACL::Rule');
 use Net::ACL::Rule qw( :action :rc );
 
 # Construction - List 1
-my $matchip1 = new Net::ACL::Match::IP('10.0.0.0/8');
+my $matchip1 = new Net::ACL::Match::IP(0,'10.0.0.0/8');
 my $rule1 = new Net::ACL::Rule(
 	Action	=> ACL_PERMIT,
 	Match	=> $matchip1
@@ -26,7 +26,7 @@ my $list1 = new Net::ACL(
 	);
 
 # Construction - List 2
-my $matchip2 = new Net::ACL::Match::IP('10.10.0.0/16');
+my $matchip2 = new Net::ACL::Match::IP(0,'10.10.0.0/16');
 my $rule2 = new Net::ACL::Rule(
 	Action	=> ACL_PERMIT,
 	Match	=> $matchip2
@@ -38,17 +38,17 @@ my $list2 = new Net::ACL(
 	);
 
 # The real construction
-my $match1 = new Net::ACL::Match::List($list1);
+my $match1 = new Net::ACL::Match::List(0,$list1);
 ok(ref $match1 eq 'Net::ACL::Match::List','Construction 1');
 ok($match1->isa('Net::ACL::Match'),'Inheritence');
 
-my $match2 = new Net::ACL::Match::List( [$list1, $list2] );
+my $match2 = new Net::ACL::Match::List(0, $list1, $list2 );
 ok(ref $match2 eq 'Net::ACL::Match::List','Construction 2');
 
-my $match3 = new Net::ACL::Match::List( [$list1, {
+my $match3 = new Net::ACL::Match::List(0, $list1, {
 	Name	=> 43,
 	Type	=> 'ip-list'
-	}]);
+	});
 ok(ref $match3 eq 'Net::ACL::Match::List','Construction 3');
 
 ok($match1->match('10.0.0.0')   eq ACL_MATCH,  'Match 1a');

@@ -1,6 +1,6 @@
 #!/usr/bin/perl
 
-# $Id: List.pm,v 1.4 2003/05/27 13:53:17 unimlo Exp $
+# $Id: List.pm,v 1.6 2003/05/27 23:41:53 unimlo Exp $
 
 package Net::ACL::Match::List;
 
@@ -9,8 +9,8 @@ use vars qw( $VERSION @ISA );
 
 ## Inheritance and Versioning ##
 
-@ISA     = qw( Net::ACL::Match Exporter );
-$VERSION = '0.01';
+@ISA     = qw( Net::ACL::Match );
+$VERSION = '0.02';
 
 ## Module Imports ##
 
@@ -27,35 +27,18 @@ sub new
  my $proto = shift;
  my $class = ref $proto || $proto;
 
+ @_ = @{$_[0]} if (scalar @_ == 1) && (ref $_[0] eq 'ARRAY');
+
  my $this = {
         _lists => [],
-	_index => 0
+	_index => shift
   };
+
+ croak "Index should be a number" unless $this->{_index} =~ /^[0-9]$/;
 
  bless($this, $class);
 
- my $arg = shift;
-
- if ((ref $arg eq 'Net::ACL')
-  || (! ref $arg))
-  {
-   $this->add_list($arg);
-  }
- elsif (ref $arg eq 'HASH')
-  {
-   my ($k) = (grep /Index/i, keys %{$arg});
-   $k ||= '';
-   $this->{_index} = $arg->{$k} || 0;
-   delete $arg->{$k};
-   $this->add_list($arg);
-  }
- elsif (ref $arg eq 'ARRAY')
-  {
-   foreach my $sarg (@{$arg})
-    {
-     $this->add_list($sarg);
-    }
-  };
+ $this->add_list(@_);
 
  croak 'Need at least one access-list to match' unless scalar  $this->{_lists};
 
@@ -66,9 +49,27 @@ sub new
 
 sub add_list
 {
- my ($this,$arg) = @_;
- my $l = (blessed $arg) ? $arg : renew Net::ACL::Bootstrap(%{$arg});
- push(@{$this->{_lists}},$l);
+ my $this = shift;
+ if (blessed $_[0])
+  {
+   push(@{$this->{_lists}}, shift);
+   $this->add_list(@_) unless scalar @_ == 0;
+  }
+ elsif (ref $_[0] eq 'ARRAY')
+  {
+   $this->add_list(shift);
+   $this->add_list(@_) unless scalar @_ == 0;
+  }
+ elsif (ref $_[0] eq 'HASH')
+  {
+   my $d = shift;
+   $this->add_list(renew Net::ACL::Bootstrap(%{$d}));
+   $this->add_list(@_) unless scalar @_ == 0;
+  }
+ else
+  {
+   $this->add_list(renew Net::ACL::Bootstrap(@_));
+  };
 }
 
 sub match
@@ -101,7 +102,7 @@ Net::ACL::Match::List - Class matching data against one or more access-lists
     use Net::ACL::Match::List;
 
     # Constructor
-    $match = new Net::ACL::Match::List( [
+    $match = new Net::ACL::Match::List(2, [
 	Type	=> 'prefix-list'
 	Name	=> 42
 	] );
@@ -118,14 +119,16 @@ data if data is permited by all access-lists.
 
 I<new()> - create a new Net::ACL::Match::List object
 
-    $match = new Net::ACL::Match::List( [
+    $match = new Net::ACL::Match::List(2, [
 	Type	=> 'prefix-list'
 	Name	=> 42
 	] );
 
 This is the constructor for Net::ACL::Match::List objects. It
-returns a reference to the newly created object. It takes one argument,
-which can have one of the following types:
+returns a reference to the newly created object. The first
+argument is the index of the element that should be matched.
+
+The second argument can have one of the following types:
 
 I<Net::ACL> - An access-list to be matched against.
 

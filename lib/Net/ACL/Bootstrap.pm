@@ -1,17 +1,16 @@
 #!/usr/bin/perl
 
-# $Id: Bootstrap.pm,v 1.2 2003/05/27 13:53:13 unimlo Exp $
+# $Id: Bootstrap.pm,v 1.4 2003/05/27 23:41:50 unimlo Exp $
 
 package Net::ACL::Bootstrap;
 
 use strict;
-use Exporter;
-use vars qw( $VERSION @ISA $AUTOLOAD);
+use vars qw( $VERSION @ISA $AUTOLOAD );
 
 ## Inheritance and Versioning ##
 
 @ISA     = qw( Exporter );
-$VERSION = '0.01';
+$VERSION = '0.02';
 
 ## Module Imports ##
 
@@ -55,12 +54,10 @@ sub renew
 
 sub AUTOLOAD
 {
- use Data::Dumper;
  my $method = $AUTOLOAD;
  my $this = shift;
  my $class = ref $this || $this;
  $method =~ s/${class}:://;
- #warn "DOING PROXY FOR METHOD $method";
  $this->fetch unless (defined $this->{_reallist});
  $this->{_reallist}->$method(@_);
 }
@@ -118,7 +115,7 @@ This is the only constructor for Net::ACL::Bootstrap class.  The arguments
 are the same as the B<renew> constructor of the B<Net::ACL> class.
 
 It either returns an existing Net::ACL object matching the arguments or a
-reference to the newly created object.
+reference to the newly created Net::ACL::Bootstrap object.
 
 =head1 ACCESSOR METHODS
 
@@ -132,7 +129,7 @@ All other methods are proxyed to the real Net::ACL object.
 
 =head1 SEE ALSO
 
-B<Net::ACL>
+Net::ACL
 
 =head1 AUTHOR
 

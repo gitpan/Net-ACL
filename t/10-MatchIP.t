@@ -1,6 +1,6 @@
 #!/usr/bin/perl -wT
 
-# $Id: 10-MatchIP.t,v 1.1 2003/05/27 02:08:36 unimlo Exp $
+# $Id: 10-MatchIP.t,v 1.2 2003/05/27 22:42:10 unimlo Exp $
 
 use strict;
 
@@ -13,7 +13,7 @@ use_ok('Net::ACL::Rule');
 use Net::ACL::Rule qw( :rc );
 
 # Construction
-my $match = new Net::ACL::Match::IP('10.0.0.0/8');
+my $match = new Net::ACL::Match::IP(0,'10.0.0.0/8');
 ok(ref $match eq 'Net::ACL::Match::IP','Normal construction');
 ok($match->isa('Net::ACL::Match'),     'Inheritence');
 

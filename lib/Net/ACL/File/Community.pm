@@ -1,6 +1,6 @@
 #!/usr/bin/perl
 
-# $Id: Community.pm,v 1.2 2003/05/27 16:12:04 unimlo Exp $
+# $Id: Community.pm,v 1.3 2003/05/27 22:42:05 unimlo Exp $
 
 package Net::ACL::File::CommunityRule;
 
@@ -9,8 +9,8 @@ use vars qw( $VERSION @ISA );
 
 ## Inheritance ##
 
-@ISA     = qw( Exporter Net::ACL::Rule );
-$VERSION = '0.01';
+@ISA     = qw( Net::ACL::Rule );
+$VERSION = '0.02';
 
 ## Module Imports ##
 
@@ -37,8 +37,8 @@ use vars qw( $VERSION @ISA );
 
 ## Inheritance ##
 
-@ISA     = qw( Exporter Net::ACL::File::Standard );
-$VERSION = '0.01';
+@ISA     = qw( Net::ACL::File::Standard );
+$VERSION = '0.02';
 
 ## Module Imports ##
 
@@ -47,7 +47,7 @@ use Carp;
 
 ## Net::ACL::File Class Auto Registration Code ##
 
-Net::ACL::File->add_knownlist('community-list',__PACKAGE__,'ip community-list');
+Net::ACL::File->add_listtype('community-list',__PACKAGE__,'ip community-list');
 
 ## Public Object Methods ##
 
@@ -61,7 +61,7 @@ sub loadmatch
  my $rule = new Net::ACL::File::CommunityRule(
 	Action	=> $action
 	);
- $rule->add_match($rule->autoconstruction('Match','Net::ACL::Match::Scalar','Scalar',$data))
+ $rule->add_match($rule->autoconstruction('Match','Net::ACL::Match::Scalar','Scalar',0,$data))
  	unless $data eq '';
  $this->add_rule($rule);
  $this->name($name);

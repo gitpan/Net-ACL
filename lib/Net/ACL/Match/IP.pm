@@ -1,6 +1,6 @@
 #!/usr/bin/perl
 
-# $Id: IP.pm,v 1.6 2003/05/27 12:52:08 unimlo Exp $
+# $Id: IP.pm,v 1.7 2003/05/27 22:42:07 unimlo Exp $
 
 package Net::ACL::Match::IP;
 
@@ -9,8 +9,8 @@ use vars qw( $VERSION @ISA );
 
 ## Inheritance and Versioning ##
 
-@ISA     = qw( Net::ACL::Match Exporter );
-$VERSION = '0.01';
+@ISA     = qw( Net::ACL::Match );
+$VERSION = '0.02';
 
 ## Module Imports ##
 
@@ -26,21 +26,21 @@ sub new
  my $proto = shift;
  my $class = ref $proto || $proto;
 
- my $index = 0;
- if ($_[0] =~ /^#([0-9]+)$/)
-  {
-   shift;
-   $index = $1;
-  };
+ @_ = @{$_[0]} if (scalar @_ == 1) && (ref $_[0] eq 'ARRAY');
 
- my $this = {
-	_index => $index,
-        _net => new Net::Netmask(@_)
-  };
+ my $this = bless( {
+	_index => undef,
+        _net => undef
+	}, $class);
+
+ $this->{_index} = shift;
+ croak "Index not a number ($this->{_index})" unless $this->{_index} =~ /^[0-9]+$/;
+
+ croak "Missing network data" unless scalar @_ > 0;
+
+ $this->{_net} = new Net::Netmask(@_);
 
  croak $this->{_net}->{'ERROR'} if defined $this->{_net}->{'ERROR'};
-
- bless($this, $class);
 
  return $this;
 }
@@ -73,8 +73,7 @@ Net::ACL::Match::IP - Class matching IP addresses against an IP or network
     use Net::ACL::Match::IP;
 
     # Constructor
-    $match = new Net::ACL::Match::IP('10.0.0.0/8');
-    $match = new Net::ACL::Match::IP('#1','10.0.0.0/8'); # $match->index(1);
+    $match = new Net::ACL::Match::IP(1,'10.0.0.0/8');
 		
     # Accessor Methods
     $netmaskobj = $match->net($netmaskobj);
@@ -91,13 +90,12 @@ operate automaticly with B<Net::ACL::Rule>.
 
 I<new()> - create a new Net::ACL::Match::IP object
 
-    $match = new Net::ACL::Match::IP('10.0.0.0/8');
+    $match = new Net::ACL::Match::IP(1,'10.0.0.0/8');
 
 This is the constructor for Net::ACL::Match::IP objects. It returns a
-reference to the newly created object. Any arguments is parsed directly to the
-constructor of B<Net::Netmask>. One exception is that if the first argument
-is number prefixed with a #, the number is interpreted as the index in the
-array given to the match method that should be matched.
+reference to the newly created object. The first argument is the argument
+number of the match method that should be matched. The remaining arguments
+is parsed directly to the constructor of B<Net::Netmask>.
 
 =head1 ACCESSOR METHODS
 

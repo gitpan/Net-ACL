@@ -1,6 +1,6 @@
 #!/usr/bin/perl
 
-# $Id: Standard.pm,v 1.2 2003/05/27 02:09:00 unimlo Exp $
+# $Id: Standard.pm,v 1.3 2003/05/27 22:42:05 unimlo Exp $
 
 package Net::ACL::File::Standard;
 
@@ -9,8 +9,8 @@ use vars qw( $VERSION @ISA );
 
 ## Inheritance and Versioning ##
 
-@ISA     = qw( Exporter Net::ACL::File );
-$VERSION = '0.01';
+@ISA     = qw( Net::ACL::File );
+$VERSION = '0.02';
 
 ## Module Imports ##
 
@@ -96,7 +96,7 @@ It replaces the load constructor and adds a loadmatch method that should be
 replaced in any sub-class.
 
 Any sub-clases should register them self with the Net::ACL::File class using
-the B<add_knownlist> method. After this, classes are constructed by the
+the B<add_listtype> class method. After this, classes are constructed by the
 Net::ACL::File->new constructor.
 
 =head1 CONSTRUCTOR
@@ -117,7 +117,10 @@ B<add_rule> inhertied method.
 
 B<Net::ACL::File>, B<Net::ACL>,
 B<Net::ACL::File::Community>, B<Net::ACL::File::ASPath>,
-B<Net::ACL::File::Prefix>, B<Net::ACL::File::Access>
+B<Net::ACL::File::Prefix>, B<Net::ACL::File::Access>,
+B<Net::ACL::File::IPAccess>, B<Net::ACL::File::IPAccessExt>,
+B<Net::ACL::File::RouteMap>
+
 
 =head1 AUTHOR
 

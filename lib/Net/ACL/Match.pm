@@ -1,17 +1,16 @@
 #!/usr/bin/perl
 
-# $Id: Match.pm,v 1.4 2003/05/27 12:52:04 unimlo Exp $
+# $Id: Match.pm,v 1.5 2003/05/27 22:42:01 unimlo Exp $
 
 package Net::ACL::Match;
 
 use strict;
-use Exporter;
 use vars qw( $VERSION @ISA );
 
 ## Inheritance and Versioning ##
 
 @ISA     = qw( Exporter );
-$VERSION = '0.01';
+$VERSION = '0.02';
 
 ## Module Imports ##
 
@@ -72,14 +71,15 @@ Net::ACL::Match - Abstract parent class of Match-classes
 
     # Accessor Methods
     $rc = $match->match(@data);
+    $index = $match->index($index);
 
 =head1 DESCRIPTION
 
 This is an abstract parent class for all B<Net::ACL::Match*>
 classes. It is used by the B<Net::ACL::Rule> object.
 
-It only has a constructor B<new> and a method B<match>. Both should be
-replaced in any ancestor object.
+It only has a constructor B<new> and two methods B<match> and B<index>.
+Both new and match should be replaced in any ancestor object.
 
 =head1 CONSTRUCTOR
 
@@ -98,10 +98,17 @@ the data passed to the constructor and return either ACL_MATCH or
 ACL_NOMATCH as exported by the ":rc" exporter symbol of
 B<Net::ACL::Rule>.
 
+I<index()>
+
+This function return the argument number that matched any sub-class.
+Called with an argument, the argument is used as the new value.
+
 =head1 SEE ALSO
 
 B<Net::ACL::Rule>, B<Net::ACL>,
-B<Net::ACL::Match::IP>, B<Net::ACL::Match::List>
+B<Net::ACL::Match::IP>, B<Net::ACL::Match::Prefix>,
+B<Net::ACL::Match::List>, B<Net::ACL::Match::Scalar>,
+B<Net::ACL::Match::Regexp>
 
 =head1 AUTHOR
 

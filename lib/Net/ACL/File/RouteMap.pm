@@ -1,6 +1,6 @@
 #!/usr/bin/perl
 
-# $Id: RouteMap.pm,v 1.6 2003/05/27 15:18:08 unimlo Exp $
+# $Id: RouteMap.pm,v 1.8 2003/05/27 23:41:52 unimlo Exp $
 
 package Net::ACL::File::RouteMapRule;
 
@@ -9,8 +9,8 @@ use vars qw( $VERSION @ISA );
 
 ## Inheritance ##
 
-@ISA     = qw( Exporter Net::ACL::RouteMapRule );
-$VERSION = '0.01';
+@ISA     = qw( Net::ACL::RouteMapRule );
+$VERSION = '0.02';
 
 ## Module Imports ##
 
@@ -46,7 +46,7 @@ sub asconfig
     }
    else
     {
-     croak "Unknown match index for Route-map. Cannot generate config line";
+     carp "Unknown match index (" . $match->index . ") for Route-map match rule (" . (ref ($match->index)) . "). Cannot generate config line";
     }
   }
 
@@ -67,7 +67,7 @@ sub asconfig
     }
    else
     {
-     croak "Unknown match index for Route-map. Cannot generate config line";
+     carp "Unknown set index (" . $set->index . ") for Route-map set rule (" . (ref ($set->index)) . "). Cannot generate config line";
     }
   }
 
@@ -85,8 +85,8 @@ use vars qw( $VERSION @ISA );
 
 ## Inheritance ##
 
-@ISA     = qw( Exporter Net::ACL::File::Standard );
-$VERSION = '0.01';
+@ISA     = qw( Net::ACL::File::Standard );
+$VERSION = '0.02';
 
 ## Module Imports ##
 
@@ -95,7 +95,7 @@ use Carp;
 
 ## Net::ACL::File Class Auto Registration Code ##
 
-Net::ACL::File->add_knownlist('route-map',__PACKAGE__,'route-map');
+Net::ACL::File->add_listtype('route-map',__PACKAGE__,'route-map');
 
 ## Public Object Methods ##
 
@@ -137,16 +137,16 @@ sub loadmatch
 
 =head1 NAME
 
-Net::ACL::File::IPAccessExt - Extended IP access-lists loaded from configuration string.
+Net::ACL::File::RouteMap - Class to load BGP Route-maps from configuration string.
 
 =head1 DESCRIPTION
 
 This module extends the Net::ACL::File::Standard class to handle
-community-lists. See B<Net::ACL::File::Standard> for details.
+community-lists. See Net::ACL::File::Standard for details.
 
 =head1 SEE ALSO
 
-B<Net::ACL>, B<Net::ACL::File>, B<Net::ACL::Standard>
+Net::ACL, Net::ACL::File, Net::ACL::Standard
 
 =head1 AUTHOR
 
@@ -154,6 +154,6 @@ Martin Lorensen <bgp@martin.lorensen.dk>
 
 =cut
 
-## End of Net::ACL::File::IPAccessExt ##
+## End of Net::ACL::File::RouteMap ##
 
 1;

@@ -1,17 +1,16 @@
 #!/usr/bin/perl
 
-# $Id: IPAccessExtRule.pm,v 1.1 2003/05/27 15:55:31 unimlo Exp $
+# $Id: IPAccessExtRule.pm,v 1.2 2003/05/27 22:42:01 unimlo Exp $
 
 package Net::ACL::IPAccessExtRule;
 
 use strict;
 use vars qw( $VERSION @ISA @EXPORT @EXPORT_OK %EXPORT_TAGS @ACL_EIA_INDEX );
-use Carp;
 
 ## Inheritance and Versioning ##
 
-@ISA     = qw( Net::ACL::Rule Exporter );
-$VERSION = '0.01';
+@ISA     = qw( Net::ACL::Rule );
+$VERSION = '0.02';
 
 ## Constants For Argument numbering ##
 

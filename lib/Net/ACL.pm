@@ -1,17 +1,16 @@
 #!/usr/bin/perl
 
-# $Id: ACL.pm,v 1.6 2003/05/27 13:53:10 unimlo Exp $
+# $Id: ACL.pm,v 1.8 2003/05/27 23:41:48 unimlo Exp $
 
 package Net::ACL;
 
 use strict;
-use Exporter;
-use vars qw( $VERSION @ISA @EXPORT @EXPORT_OK %EXPORT_TAGS );
+use vars qw( $VERSION @ISA );
 
 ## Inheritance and Versioning ##
 
 @ISA     = qw( Exporter );
-$VERSION = '0.01';
+$VERSION = '0.02';
 
 ## Module Imports ##
 
@@ -19,15 +18,7 @@ use Carp;
 use Net::ACL::Rule qw( :action );
 use Scalar::Util qw( weaken blessed );
 
-## Export Tag Definitions ##
-
-@EXPORT      = ();
-@EXPORT_OK   = ();
-%EXPORT_TAGS = (
-    ALL      => [ @EXPORT, @EXPORT_OK ]
-);
-
-## Global private variables ##
+## Global Private Variables ##
 
 my %knownlists;
 
@@ -198,7 +189,6 @@ sub type
 	unless (defined $newtype || defined $this->{_type})
 	 && ! (defined $newtype && defined $this->{_type} && $newtype eq $this->{_type});
 
-#use Data::Dumper; warn Dumper($this->{_type},$this->{_name},$newtype,$this->knownlists);
    croak 'Two access-lists with same (type,name) = (' .
 	($this->{_type} || $class) . ',' . $this->{_name} . ') identification are not allowed!'
 		if defined $this->{_name}
@@ -285,7 +275,12 @@ Net::ACL - Class representing a generic access-list/route-map
     # Object Copy
     $clone = $list->clone();
 
+    # Class methods
+    $type_names_hr = Net::ACL->knownlists();
+
     # Accessor Methods
+    $list->add_rule($rule);
+    $list->remove_rule($rule);
     $name = $list->name($name);
     $type = $list->type($type);
     $rc = $list->match(@data);
@@ -389,9 +384,16 @@ one by one as long as they return ACL_CONTINUE.
 The function returns the result code (ACL_PERMIT or ACL_DENY)
 and the, posibly modified, arguments of the function.
 
+I<add_rule()>
+
+I<remove_rule()>
+
+The add and remove rule methods can add and remove rules after object
+construction.
+
 =head1 SEE ALSO
 
-B<Net::ACL::Rule>, B<Net::ACL::RouteMap>
+Net::ACL::Rule, Net::ACL::File, Net::ACL::Bootstrap
 
 =head1 AUTHOR
 

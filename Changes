@@ -1,8 +1,14 @@
-$Id: Changes,v 1.4 2003/05/27 16:12:00 unimlo Exp $
+$Id: Changes,v 1.5 2003/05/27 23:41:37 unimlo Exp $
 
 Revision history for Perl extension Net::ACL.
 
-0.01  Sun May 25 14:21:53 2003
+0.02  Wed May 28
+	- added half a test script for route-map
+	- changed constructors for set and match objects to always have index as first argument.
+	- documentation clean-up!
+	- code clean-up!
+
+0.01  Wed May 27
 	- original version; created by h2xs 1.21
 	- first PRE-ALPHA release to public
 	- still lots of bugs and missing documentation

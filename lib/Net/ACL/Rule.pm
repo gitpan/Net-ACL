@@ -1,6 +1,6 @@
 #!/usr/bin/perl
 
-# $Id: Rule.pm,v 1.6 2003/05/27 09:40:22 unimlo Exp $
+# $Id: Rule.pm,v 1.8 2003/05/27 23:41:50 unimlo Exp $
 
 package Net::ACL::Rule;
 
@@ -13,7 +13,7 @@ use vars qw(
 ## Inheritance and Versioning ##
 
 @ISA     = qw( Exporter );
-$VERSION = '0.01';
+$VERSION = '0.02';
 
 ## Module Imports ##
 
@@ -174,7 +174,7 @@ sub autoconstruction
  unless ($class->isa('Net::ACL::'.$type))
   {
    eval "use $class;";
-   croak "Unknown $type rule key $arg - No class $class found." if ($@ =~ /Can't locate/);
+   croak "Unknown $type rule key $arg - No class $class found (Value: @value)." if ($@ =~ /Can't locate/);
    croak $@ if ($@);
    croak "$class is not a Net::ACL::$type class"
      unless $class->isa('Net::ACL::'.$type)
